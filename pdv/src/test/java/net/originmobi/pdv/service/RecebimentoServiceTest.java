@@ -8,25 +8,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import net.originmobi.pdv.model.*;
+import net.originmobi.pdv.model.cartao.MaquinaCartao;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.MockitoAnnotations;
 
-import net.originmobi.pdv.model.Caixa;
-import net.originmobi.pdv.model.Parcela;
-import net.originmobi.pdv.model.Pessoa;
-import net.originmobi.pdv.model.Recebimento;
-import net.originmobi.pdv.model.Titulo;
-import net.originmobi.pdv.model.TituloTipo;
-import net.originmobi.pdv.model.Usuario;
 import net.originmobi.pdv.repository.RecebimentoRepository;
 import net.originmobi.pdv.service.cartao.CartaoLancamentoService;
 import net.originmobi.pdv.controller.TituloService;
 
-@ExtendWith(MockitoExtension.class)
+@SuppressWarnings("deprecation")
 class RecebimentoServiceTest {
 
     @Mock
@@ -66,17 +60,24 @@ class RecebimentoServiceTest {
     private Caixa caixa;
     private Usuario usuario;
     private TituloTipo tituloTipo;
+    private MaquinaCartao maquinaCartao;
 
     @BeforeEach
     void setUp() {
+        MockitoAnnotations.initMocks(this);
         pessoa = new Pessoa();
         pessoa.setCodigo(1L);
         pessoa.setNome("Teste Cliente");
+
+        Receber receber = new Receber();
+        receber.setPessoa(pessoa);
+
 
         parcela = new Parcela();
         parcela.setCodigo(1L);
         parcela.setValor_restante(100.0);
         parcela.setQuitado(0);
+        parcela.setReceber(receber);
 
         recebimento = new Recebimento();
         recebimento.setCodigo(1L);
@@ -90,6 +91,8 @@ class RecebimentoServiceTest {
 
         titulo = new Titulo();
         titulo.setCodigo(1L);
+        titulo.setDescricao("");
+        titulo.setMaquina(maquinaCartao);
         titulo.setTipo(tituloTipo);
 
         caixa = new Caixa();
@@ -102,14 +105,32 @@ class RecebimentoServiceTest {
     @Test
     void abrirRecebimento_Success() {
         String[] arrayParcelas = {"1"};
+        
+        Receber receber = new Receber();
+        assertNotNull(pessoa, "Pessoa não deve ser nula");
+        receber.setPessoa(pessoa);
+        
+        Parcela parcela = new Parcela();
+        parcela.setCodigo(1L);
+        parcela.setValor_restante(100.0);
+        parcela.setQuitado(0);
+        parcela.setReceber(receber);
+        
         when(parcelas.busca(1L)).thenReturn(parcela);
         when(pessoas.buscaPessoa(1L)).thenReturn(Optional.of(pessoa));
-        when(recebimentos.save(any(Recebimento.class))).thenReturn(recebimento);
+        
+        Recebimento recebimentoSalvo = new Recebimento();
+        recebimentoSalvo.setCodigo(1L);
+        when(recebimentos.save(any(Recebimento.class))).thenReturn(recebimentoSalvo);
 
         String result = recebimentoService.abrirRecebimento(1L, arrayParcelas);
 
         assertEquals("1", result);
-        verify(recebimentos).save(any(Recebimento.class));
+        verify(recebimentos).save(argThat(rec -> {
+            return true;
+        }));
+        verify(parcelas).busca(1L);
+        verify(pessoas).buscaPessoa(1L);
     }
 
     @Test
@@ -118,8 +139,8 @@ class RecebimentoServiceTest {
         parcela.setQuitado(1);
         when(parcelas.busca(1L)).thenReturn(parcela);
 
-        assertThrows(RuntimeException.class, () -> 
-            recebimentoService.abrirRecebimento(1L, arrayParcelas)
+        assertThrows(RuntimeException.class, () ->
+                recebimentoService.abrirRecebimento(1L, arrayParcelas)
         );
     }
 
@@ -129,8 +150,8 @@ class RecebimentoServiceTest {
         when(parcelas.busca(1L)).thenReturn(parcela);
         when(pessoas.buscaPessoa(1L)).thenReturn(Optional.empty());
 
-        assertThrows(RuntimeException.class, () -> 
-            recebimentoService.abrirRecebimento(1L, arrayParcelas)
+        assertThrows(RuntimeException.class, () ->
+                recebimentoService.abrirRecebimento(1L, arrayParcelas)
         );
     }
 
@@ -156,8 +177,8 @@ class RecebimentoServiceTest {
         recebimento.setData_processamento(new Timestamp(System.currentTimeMillis()));
         when(recebimentos.findById(1L)).thenReturn(Optional.of(recebimento));
 
-        assertThrows(RuntimeException.class, () -> 
-            recebimentoService.receber(1L, 100.0, 0.0, 0.0, 1L)
+        assertThrows(RuntimeException.class, () ->
+                recebimentoService.receber(1L, 100.0, 0.0, 0.0, 1L)
         );
     }
 
@@ -166,8 +187,8 @@ class RecebimentoServiceTest {
         when(recebimentos.findById(1L)).thenReturn(Optional.of(recebimento));
         when(titulos.busca(1L)).thenReturn(Optional.of(titulo));
 
-        assertThrows(RuntimeException.class, () -> 
-            recebimentoService.receber(1L, 0.0, 0.0, 0.0, 1L)
+        assertThrows(RuntimeException.class, () ->
+                recebimentoService.receber(1L, 0.0, 0.0, 0.0, 1L)
         );
     }
 
@@ -186,8 +207,8 @@ class RecebimentoServiceTest {
         recebimento.setData_processamento(new Timestamp(System.currentTimeMillis()));
         when(recebimentos.findById(1L)).thenReturn(Optional.of(recebimento));
 
-        assertThrows(RuntimeException.class, () -> 
-            recebimentoService.remover(1L)
+        assertThrows(RuntimeException.class, () ->
+                recebimentoService.remover(1L)
         );
     }
-} 
+}
