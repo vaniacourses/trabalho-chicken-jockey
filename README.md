@@ -1,6 +1,3 @@
-## Teste do Projeto PDV - Disciplina de Qualidade e Teste
-### Grupo Chicken Jockey
-
 - 📄 Link do Plano de Testes: [Google Docs](https://docs.google.com/document/d/13EUyOmss-Ym6IbgvCHP-StI8qOjlkMFlMTvpD7NzFrg/edit?usp=sharing)
 - 🧪 Testes Manuais realizados no TestLink: [TestLink - Vania UFF](http://vania.ic.uff.br/testlink/)
 - 📁 Projeto de Teste: **CJ: Chicken Jockey**
@@ -12,4 +9,4 @@
   - Para que os scripts do banco funcionem, é preciso que se crie um banco de dados chamado **"pdv"**
   - Necessário ter **Spring** e **MySQL** instalados
   - Versão do Java: **8**
-
+  - Para conexão com o banco, crie um arquivo **`application.properties`** a partir do **`application-example.properties`** que está na pasta **`resources`**
