@@ -19,11 +19,28 @@
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# Virtual machine crash logs
 hs_err_pid*
 
-# Arquivo de configuração do Spring Boot
+# Spring Boot config files
 application.properties
 
-# Arquivo de configuração do Spring Boot
+# Build output
 /target/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+out/
+
+# Eclipse
+*.launch
+*.settings/
+*.metadata/
+bin/
+tmp/
+*.bak
+
+# VS Code (caso alguém use)
+.vscode/
