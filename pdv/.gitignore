@@ -24,3 +24,6 @@ hs_err_pid*
 
 # Arquivo de configuração do Spring Boot
 application.properties
+
+# Arquivo de configuração do Spring Boot
+/target/
