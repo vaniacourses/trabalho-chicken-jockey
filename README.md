@@ -4,3 +4,6 @@
 - 🧪 Testes Manuais realizados no TestLink: [TestLink - Vania UFF](http://vania.ic.uff.br/testlink/)
 - 📁 Projeto de Teste: **CJ: Chicken Jockey**
 - 👥 Cada integrante elaborou seu próprio plano de testes para a execução dos testes manuais.
+- 🔐 **Login para acessar o sistema:**
+  - Nome: **gerente**
+  - Senha: **123**
