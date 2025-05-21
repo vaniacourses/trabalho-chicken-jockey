@@ -188,9 +188,8 @@ class ProdutoServiceTest {
         when(produtoRepository.findByCodigoIn(codprod)).thenReturn(produtoMock);
         when(produtoMock.getControla_estoque()).thenReturn(ProdutoControleEstoque.NAO);
 
-        RuntimeException ex = assertThrows(RuntimeException.class, () -> {
-            produtoService.ajusteEstoque(codprod, qtd, tipo, origem, data);
-        });
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> produtoService.ajusteEstoque(codprod, qtd, tipo, origem, data));
+
         assertTrue(ex.getMessage().contains("não controla estoque"));
         verify(produtoRepository, never()).movimentaEstoque(any(), any(), anyInt(), any(), any());
     }
@@ -209,9 +208,8 @@ class ProdutoServiceTest {
         when(produtoMock.getControla_estoque()).thenReturn(ProdutoControleEstoque.SIM);
         when(produtoRepository.saldoEstoque(2L)).thenReturn(5); // estoque insuficiente
 
-        RuntimeException ex = assertThrows(RuntimeException.class, () -> {
-            produtoService.movimentaEstoque(codvenda, EntradaSaida.SAIDA);
-        });
+        RuntimeException ex = assertThrows(RuntimeException.class, () ->
+                produtoService.movimentaEstoque(codvenda, EntradaSaida.SAIDA));
         assertTrue(ex.getMessage().contains("não tem estoque suficiente"));
         verify(produtoRepository, never()).movimentaEstoque(any(), any(), anyInt(), any(), any());
     }
