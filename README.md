@@ -10,3 +10,6 @@
   - Necessário ter **Spring** e **MySQL** instalados
   - Versão do Java: **8**
   - Para conexão com o banco, crie um arquivo **`application.properties`** a partir do **`application-example.properties`** que está na pasta **`resources`**
+  - Docker
+  - Para executar o docker: execute os comandos **`mvn clean package`**, **`docker-compose up -d`**, e **`docker-compose down`** para derrubar o container
+  - para conectar ao banco do docker, a url é **`jdbc:mysql://localhost:3308/pdv`**, banco **`pdv`**, senha **`pdv`** e usuário **`pdv`** 
