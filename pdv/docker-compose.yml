@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  mysql:
+    image: mysql:5.7
+    container_name: pdv-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: pdv
+      MYSQL_USER: pdv
+      MYSQL_PASSWORD: pdv
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - pdv-network
+
+  app:
+    build: .
+    container_name: pdv-app
+    depends_on:
+      - mysql
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/pdv?useSSL=false
+      SPRING_DATASOURCE_USERNAME: pdv
+      SPRING_DATASOURCE_PASSWORD: pdv
+    networks:
+      - pdv-network
+
+networks:
+  pdv-network:
+
+volumes:
+  mysql-data:
