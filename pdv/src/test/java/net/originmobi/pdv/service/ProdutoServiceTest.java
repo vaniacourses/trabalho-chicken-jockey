@@ -11,11 +11,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -80,14 +83,16 @@ class ProdutoServiceTest {
         verify(produtoRepository).findById(1L);
     }
 
-	@Test
 	void filter_deveRetornarProdutosFiltrados() {
-		ProdutoFilter filter = new ProdutoFilter();
-		filter.setDescricao("Produto");
-		Pageable pageable = mock(Pageable.class);
-		when(produtoRepository.findByDescricaoContaining("Produto", pageable)).thenReturn(null);
-		produtoService.filter(filter, pageable);
-		verify(produtoRepository, times(1)).findByDescricaoContaining("Produto", pageable);
+	    ProdutoFilter filter = new ProdutoFilter();
+	    filter.setDescricao("Produto");
+	    Pageable pageable = mock(Pageable.class);
+	    when(produtoRepository.findByDescricaoContaining("Produto", pageable)).thenReturn(new PageImpl<>(Collections.emptyList()));
+
+	    Page<Produto> resultPage = produtoService.filter(filter, pageable);
+	    assertNotNull(resultPage);
+	    assertTrue(resultPage.getContent().isEmpty());
+	    verify(produtoRepository, times(1)).findByDescricaoContaining("Produto", pageable);
 	}
 
 	@Test
@@ -199,7 +204,7 @@ class ProdutoServiceTest {
 		Produto produtoMock = mock(Produto.class);
 		when(produtoRepository.findByCodigoIn(2L)).thenReturn(produtoMock);
 		when(produtoMock.getControla_estoque()).thenReturn(ProdutoControleEstoque.SIM);
-		when(produtoRepository.saldoEstoque(2L)).thenReturn(5); // estoque insuficiente
+		when(produtoRepository.saldoEstoque(2L)).thenReturn(5);
 
 		RuntimeException ex = assertThrows(RuntimeException.class,
 				() -> produtoService.movimentaEstoque(codvenda, EntradaSaida.SAIDA));
@@ -229,14 +234,17 @@ class ProdutoServiceTest {
 
 	@Test
 	void filter_deveRetornarTodosOsProdutosQuandoDescricaoNula() {
-		ProdutoFilter filter = new ProdutoFilter();
-		Pageable pageable = mock(Pageable.class);
+	    ProdutoFilter filter = new ProdutoFilter();
+	    Pageable pageable = mock(Pageable.class);
 
-		when(produtoRepository.findByDescricaoContaining(eq("%"), eq(pageable))).thenReturn(null);
+	    when(produtoRepository.findByDescricaoContaining(eq("%"), eq(pageable)))
+	            .thenReturn(new PageImpl<>(Arrays.asList(produto, produto2)));
 
-		produtoService.filter(filter, pageable);
+	    Page<Produto> resultPage = produtoService.filter(filter, pageable);
 
-		verify(produtoRepository, times(1)).findByDescricaoContaining(eq("%"), eq(pageable));
+	    assertNotNull(resultPage);
+	    assertEquals(2, resultPage.getContent().size());
+	    verify(produtoRepository, times(1)).findByDescricaoContaining(eq("%"), eq(pageable));
 	}
 
 	@Test
@@ -262,5 +270,23 @@ class ProdutoServiceTest {
 		System.setOut(System.out);
 
 		verify(produtoRepository, never()).movimentaEstoque(any(), any(), anyInt(), any(), any());
+	}
+	
+	@Test
+	void movimentaEstoque_deveMovimentarEstoqueQuandoQuantidadeIgualAoEstoque() {
+	    Long codvenda = 1L;
+	    Object[] item = {2L, 5};
+	    List<Object[]> resultado = new ArrayList<>();
+	    resultado.add(item);
+	    when(vendaProdutoService.buscaQtdProduto(codvenda)).thenReturn(resultado);
+
+	    Produto produtoMock = mock(Produto.class);
+	    when(produtoRepository.findByCodigoIn(2L)).thenReturn(produtoMock);
+	    when(produtoMock.getControla_estoque()).thenReturn(ProdutoControleEstoque.SIM);
+	    when(produtoRepository.saldoEstoque(2L)).thenReturn(5);
+
+	    produtoService.movimentaEstoque(codvenda, EntradaSaida.SAIDA);
+
+	    verify(produtoRepository).movimentaEstoque(eq(2L), eq(EntradaSaida.SAIDA.toString()), eq(5), anyString(), any(java.sql.Date.class));
 	}
 }
