@@ -11,9 +11,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import net.originmobi.pdv.dto.produto.ProdutoMergerDTO;
 import net.originmobi.pdv.enumerado.EntradaSaida;
 import net.originmobi.pdv.enumerado.produto.ProdutoControleEstoque;
-import net.originmobi.pdv.enumerado.produto.ProdutoSubstTributaria;
 import net.originmobi.pdv.exception.produto.EstoqueInsuficienteException;
 import net.originmobi.pdv.exception.produto.ProdutoNaoControlaEstoqueException;
 import net.originmobi.pdv.filter.ProdutoFilter;
@@ -22,12 +22,12 @@ import net.originmobi.pdv.repository.ProdutoRepository;
 
 @Service
 public class ProdutoService {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(ProdutoService.class);
 
 	public ProdutoService(ProdutoRepository produtos, VendaProdutoService vendaProdutos) {
-	    this.produtos = produtos;
-	    this.vendaProdutos = vendaProdutos;
+		this.produtos = produtos;
+		this.vendaProdutos = vendaProdutos;
 	}
 
 	private ProdutoRepository produtos;
@@ -39,7 +39,7 @@ public class ProdutoService {
 	public List<Produto> listar() {
 		return produtos.findAll();
 	}
-	
+
 	public List<Produto> listaProdutosVendaveis() {
 		return produtos.produtosVendaveis();
 	}
@@ -57,32 +57,32 @@ public class ProdutoService {
 		return produtos.findByDescricaoContaining(descricao, pageable);
 	}
 
-	public String merger(Long codprod, Long codforne, Long codcategoria, Long codgrupo, int balanca, String descricao,
-			Double valorCusto, Double valorVenda, java.util.Date dataValidade, String controleEstoque, String situacao,
-			String unitario, ProdutoSubstTributaria subtribu, String ncm, String cest, Long tributacao, Long modbc, String vendavel) {
+	public String merger(ProdutoMergerDTO dto) {
 
-		if (codprod == 0) {
+		if (dto.getCodigo() == null || dto.getCodigo() == 0) {
 			try {
-				produtos.insere(codforne, codcategoria, codgrupo, balanca, descricao, valorCusto, valorVenda,
-						dataValidade, controleEstoque, situacao, unitario, subtribu.ordinal(), Date.valueOf(dataAtual),
-						ncm, cest, tributacao, modbc, vendavel);
+				produtos.insere(dto.getCodFornecedor(), dto.getCodCategoria(), dto.getCodGrupo(), dto.getBalanca(),
+						dto.getDescricao(), dto.getValorCusto(), dto.getValorVenda(), dto.getDataValidade(),
+						dto.getControleEstoque(), dto.getSituacao(), dto.getUnidade(), dto.getSubtributaria().ordinal(),
+						Date.valueOf(dataAtual), dto.getNcm(), dto.getCest(), dto.getCodTributacao(), dto.getCodModbc(),
+						dto.getVendavel());
 			} catch (Exception e) {
 				log.error("Erro ao cadastrar produto: {}", e.getMessage());
 				return "Erro a cadastrar produto, chame o suporte";
 			}
 		} else {
-
 			try {
-				produtos.atualiza(codprod, codforne, codcategoria, codgrupo, balanca, descricao, valorCusto, valorVenda,
-						dataValidade, controleEstoque, situacao, unitario, subtribu.ordinal(), ncm, cest, tributacao,
-						modbc, vendavel);
+				produtos.atualiza(dto.getCodigo(), dto.getCodFornecedor(), dto.getCodCategoria(), dto.getCodGrupo(),
+						dto.getBalanca(), dto.getDescricao(), dto.getValorCusto(), dto.getValorVenda(),
+						dto.getDataValidade(), dto.getControleEstoque(), dto.getSituacao(), dto.getUnidade(),
+						dto.getSubtributaria().ordinal(), dto.getNcm(), dto.getCest(), dto.getCodTributacao(),
+						dto.getCodModbc(), dto.getVendavel());
 
 				return "Produto atualizado com sucesso";
 			} catch (Exception e) {
 				log.error("Erro ao atualizar produto: {}", e.getMessage());
 				return "Erro a atualizar produto, chame o suporte";
 			}
-
 		}
 
 		return "Produdo cadastrado com sucesso";
@@ -113,20 +113,22 @@ public class ProdutoService {
 				}
 			} else {
 				log.warn("O produto de código {} não controla estoque, movimentação não realizada", codprod);
-				throw new ProdutoNaoControlaEstoqueException("O produto de código " + codprod + " não controla estoque, verifique");
+				throw new ProdutoNaoControlaEstoqueException(
+						"O produto de código " + codprod + " não controla estoque, verifique");
 			}
 		}
 
 	}
-	
+
 	public void ajusteEstoque(Long codprod, int qtd, EntradaSaida tipo, String origemOperacao, Date dataMovimentacao) {
 		Produto produto = produtos.findByCodigoIn(codprod);
-		
+
 		if (produto.getControla_estoque().equals(ProdutoControleEstoque.NAO))
-			throw new ProdutoNaoControlaEstoqueException("O produto de código " + codprod + " não controla estoque, verifique");
-		
+			throw new ProdutoNaoControlaEstoqueException(
+					"O produto de código " + codprod + " não controla estoque, verifique");
+
 		produtos.movimentaEstoque(codprod, tipo.toString(), qtd, origemOperacao, dataMovimentacao);
-		
+
 	}
 
 }

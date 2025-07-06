@@ -124,6 +124,13 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- Lombok-->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
 	</dependencies>
 	<repositories>
 		<repository>
@@ -135,6 +142,8 @@
 			<url>
 				https://jaspersoft.jfrog.io/artifactory/third-party-ce-artifacts</url>
 		</repository>
+
+
 	</repositories>
 
 	<build>

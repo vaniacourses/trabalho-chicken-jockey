@@ -32,6 +32,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+import net.originmobi.pdv.dto.produto.ProdutoMergerDTO;
 import net.originmobi.pdv.enumerado.EntradaSaida;
 import net.originmobi.pdv.enumerado.produto.ProdutoControleEstoque;
 import net.originmobi.pdv.enumerado.produto.ProdutoSubstTributaria;
@@ -132,9 +133,11 @@ class ProdutoServiceTest {
 		String vendavel = "SIM";
 		ProdutoSubstTributaria produtoSubstTributaria = ProdutoSubstTributaria.SIM;
 
-		String resultado = produtoService.merger(codprod, codforne, codcategoria, codgrupo, balanca, descricao,
+		ProdutoMergerDTO dto = new ProdutoMergerDTO(codprod, codforne, codcategoria, codgrupo, balanca, descricao,
 				valorCusto, valorVenda, null, controleEstoque, situacao, unitario, produtoSubstTributaria, ncm, cest,
 				tributacao, modbc, vendavel);
+
+		String resultado = produtoService.merger(dto);
 
 		verify(produtoRepository).insere(eq(codforne), eq(codcategoria), eq(codgrupo), eq(balanca), eq(descricao),
 				eq(valorCusto), eq(valorVenda), isNull(), eq(controleEstoque), eq(situacao), eq(unitario),
@@ -163,9 +166,11 @@ class ProdutoServiceTest {
 		String vendavel = "SIM";
 		ProdutoSubstTributaria subtribu = ProdutoSubstTributaria.SIM;
 
-		String resultado = produtoService.merger(codprod, codforne, codcategoria, codgrupo, balanca, descricao,
+		ProdutoMergerDTO dto = new ProdutoMergerDTO(codprod, codforne, codcategoria, codgrupo, balanca, descricao,
 				valorCusto, valorVenda, null, controleEstoque, situacao, unitario, subtribu, ncm, cest, tributacao,
 				modbc, vendavel);
+
+		String resultado = produtoService.merger(dto);
 
 		verify(produtoRepository).atualiza(eq(codprod), eq(codforne), eq(codcategoria), eq(codgrupo), eq(balanca),
 				eq(descricao), eq(valorCusto), eq(valorVenda), isNull(), eq(controleEstoque), eq(situacao),
@@ -266,26 +271,24 @@ class ProdutoServiceTest {
 
 	@Test
 	void movimentaEstoque_deveIgnorarMovimentacaoQuandoNaoControlaEstoque() {
-	    Long codvenda = 1L;
-	    Object[] item = { 2L, 5 };
+		Long codvenda = 1L;
+		Object[] item = { 2L, 5 };
 
-	    List<Object[]> resultado = new ArrayList<>();
-	    resultado.add(item);
-	    when(vendaProdutoService.buscaQtdProduto(codvenda)).thenReturn(resultado);
+		List<Object[]> resultado = new ArrayList<>();
+		resultado.add(item);
+		when(vendaProdutoService.buscaQtdProduto(codvenda)).thenReturn(resultado);
 
-	    Produto produtoMock = mock(Produto.class);
-	    when(produtoRepository.findByCodigoIn(2L)).thenReturn(produtoMock);
-	    
-	    when(produtoMock.getControla_estoque()).thenReturn(ProdutoControleEstoque.NAO);
+		Produto produtoMock = mock(Produto.class);
+		when(produtoRepository.findByCodigoIn(2L)).thenReturn(produtoMock);
 
+		when(produtoMock.getControla_estoque()).thenReturn(ProdutoControleEstoque.NAO);
 
-	    ProdutoNaoControlaEstoqueException ex = assertThrows(ProdutoNaoControlaEstoqueException.class, () ->
-	        produtoService.movimentaEstoque(codvenda, EntradaSaida.SAIDA)
-	    );
+		ProdutoNaoControlaEstoqueException ex = assertThrows(ProdutoNaoControlaEstoqueException.class,
+				() -> produtoService.movimentaEstoque(codvenda, EntradaSaida.SAIDA));
 
-	    assertTrue(ex.getMessage().contains("não controla estoque"));
+		assertTrue(ex.getMessage().contains("não controla estoque"));
 
-	    verify(produtoRepository, never()).movimentaEstoque(any(), any(), anyInt(), any(), any());
+		verify(produtoRepository, never()).movimentaEstoque(any(), any(), anyInt(), any(), any());
 	}
 
 	@Test
@@ -327,13 +330,15 @@ class ProdutoServiceTest {
 		String vendavel = "SIM";
 		ProdutoSubstTributaria subtribu = ProdutoSubstTributaria.NAO;
 
+		ProdutoMergerDTO dto = new ProdutoMergerDTO(codprod, codforne, codcategoria, codgrupo, balanca, descricao,
+				valorCusto, valorVenda, null, controleEstoque, situacao, unitario, subtribu, ncm, cest, tributacao,
+				modbc, vendavel);
+
 		doThrow(new RuntimeException("Erro simulado de inserção")).when(produtoRepository).insere(any(), any(), any(),
 				anyInt(), any(), any(), any(), any(), any(), any(), any(), anyInt(), any(), any(), any(), any(), any(),
 				any());
 
-		String resultado = produtoService.merger(codprod, codforne, codcategoria, codgrupo, balanca, descricao,
-				valorCusto, valorVenda, null, controleEstoque, situacao, unitario, subtribu, ncm, cest, tributacao,
-				modbc, vendavel);
+		String resultado = produtoService.merger(dto);
 
 		assertEquals("Erro a cadastrar produto, chame o suporte", resultado);
 	}
@@ -358,13 +363,15 @@ class ProdutoServiceTest {
 		String vendavel = "SIM";
 		ProdutoSubstTributaria subtribu = ProdutoSubstTributaria.NAO;
 
+		ProdutoMergerDTO dto = new ProdutoMergerDTO(codprod, codforne, codcategoria, codgrupo, balanca, descricao,
+				valorCusto, valorVenda, null, controleEstoque, situacao, unitario, subtribu, ncm, cest, tributacao,
+				modbc, vendavel);
+
 		doThrow(new RuntimeException("Erro simulado de atualização")).when(produtoRepository).atualiza(any(), any(),
 				any(), any(), anyInt(), any(), any(), any(), any(), any(), any(), any(), anyInt(), any(), any(), any(),
 				any(), any());
 
-		String resultado = produtoService.merger(codprod, codforne, codcategoria, codgrupo, balanca, descricao,
-				valorCusto, valorVenda, null, controleEstoque, situacao, unitario, subtribu, ncm, cest, tributacao,
-				modbc, vendavel);
+		String resultado = produtoService.merger(dto);
 
 		assertEquals("Erro a atualizar produto, chame o suporte", resultado);
 	}
