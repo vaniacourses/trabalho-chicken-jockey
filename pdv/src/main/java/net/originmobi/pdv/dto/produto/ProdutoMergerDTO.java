@@ -30,4 +30,5 @@ public class ProdutoMergerDTO {
     private Long codTributacao;
     private Long codModbc;
     private String vendavel;
+    private String enviar;
 }

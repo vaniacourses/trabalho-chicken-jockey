@@ -103,27 +103,25 @@ public class ProdutoController {
 	@RequestMapping(method = RequestMethod.POST)
 	public String cadastrar(@RequestParam Map<String, String> request, RedirectAttributes attributes) {
 
-		Long codigoProd = request.get("codigo").isEmpty() ? null : Long.decode(request.get("codigo"));
+		Long codigoProd = request.get("codigo") == null || request.get("codigo").isEmpty() ? null : Long.decode(request.get("codigo"));
 		String descricao = request.get("descricao");
-		Long codForne = Long.decode(request.get("fornecedor"));
-		Long codCategoria = Long.decode(request.get("categoria"));
-		Long codGrupo = Long.decode(request.get("grupo"));
-		int balanca = request.get("balanca").equals("SIM") ? 1 : 0;
-		Double valorCusto = request.get("valor_custo").isEmpty() ? 0.0
-				: Double.valueOf(request.get("valor_custo").replace(",", "."));
-		Double valorVenda = request.get("valor_venda").isEmpty() ? 0.0
-				: Double.valueOf(request.get("valor_venda").replace(",", "."));
-		String validadeStr = request.get("data_validade");
+		Long codForne = request.get("fornecedor") == null || request.get("fornecedor").isEmpty() ? null : Long.decode(request.get("fornecedor"));
+		Long codCategoria = request.get("categoria") == null || request.get("categoria").isEmpty() ? null : Long.decode(request.get("categoria"));
+		Long codGrupo = request.get("grupo") == null || request.get("grupo").isEmpty() ? null : Long.decode(request.get("grupo"));
+		int balanca = request.get("balanca") != null && request.get("balanca").equals("SIM") ? 1 : 0;
+		Double valorCusto = request.get("valor_custo") == null || request.get("valor_custo").isEmpty() ? 0.0 : Double.valueOf(request.get("valor_custo").replace(",", "."));
+		Double valorVenda = request.get("valor_venda") == null || request.get("valor_venda").isEmpty() ? 0.0 : Double.valueOf(request.get("valor_venda").replace(",", "."));
+		String validadeStr = request.get("data_validade") == null ? "" : request.get("data_validade");
 		String controleEstoque = request.get("controla_estoque");
 		String ativo = request.get("ativo");
 		String unidade = request.get("unidade");
-		ProdutoSubstTributaria substituicao = request.get("subtributaria").equals("SIM") ? ProdutoSubstTributaria.SIM
-				: ProdutoSubstTributaria.NAO;
+		ProdutoSubstTributaria substituicao = request.get("subtributaria") != null && request.get("subtributaria").equals("SIM") ? ProdutoSubstTributaria.SIM : ProdutoSubstTributaria.NAO;
 		String ncm = request.get("ncm");
 		String cest = request.get("cest");
-		Long codTributacao = request.get("tributacao").isEmpty() ? null : Long.decode(request.get("tributacao"));
-		Long codModbc = request.get("modBcIcms").isEmpty() ? null : Long.decode(request.get("modBcIcms"));
+		Long codTributacao = request.get("tributacao") == null || request.get("tributacao").isEmpty() ? null : Long.decode(request.get("tributacao"));
+		Long codModbc = request.get("modBcIcms") == null || request.get("modBcIcms").isEmpty() ? null : Long.decode(request.get("modBcIcms"));
 		String vendavel = request.get("vendavel");
+		String enviar = request.get("enviar");
 
 		Date dataValidade = null;
 		if (!validadeStr.isEmpty()) {
@@ -137,7 +135,7 @@ public class ProdutoController {
 
 		ProdutoMergerDTO dto = new ProdutoMergerDTO(codigoProd, codForne, codCategoria, codGrupo, balanca, descricao,
 				valorCusto, valorVenda, dataValidade, controleEstoque, ativo, unidade, substituicao, ncm, cest,
-				codTributacao, codModbc, vendavel);
+				codTributacao, codModbc, vendavel, enviar);
 
 		String mensagem = produtosService.merger(dto);
 

@@ -132,10 +132,11 @@ class ProdutoServiceTest {
 		Long modbc = 7L;
 		String vendavel = "SIM";
 		ProdutoSubstTributaria produtoSubstTributaria = ProdutoSubstTributaria.SIM;
+		String enviar = "Salvar";
 
 		ProdutoMergerDTO dto = new ProdutoMergerDTO(codprod, codforne, codcategoria, codgrupo, balanca, descricao,
 				valorCusto, valorVenda, null, controleEstoque, situacao, unitario, produtoSubstTributaria, ncm, cest,
-				tributacao, modbc, vendavel);
+				tributacao, modbc, vendavel, enviar);
 
 		String resultado = produtoService.merger(dto);
 
@@ -165,10 +166,11 @@ class ProdutoServiceTest {
 		Long modbc = 7L;
 		String vendavel = "SIM";
 		ProdutoSubstTributaria subtribu = ProdutoSubstTributaria.SIM;
+		String enviar = "Salvar";
 
 		ProdutoMergerDTO dto = new ProdutoMergerDTO(codprod, codforne, codcategoria, codgrupo, balanca, descricao,
 				valorCusto, valorVenda, null, controleEstoque, situacao, unitario, subtribu, ncm, cest, tributacao,
-				modbc, vendavel);
+				modbc, vendavel, enviar);
 
 		String resultado = produtoService.merger(dto);
 
@@ -329,10 +331,10 @@ class ProdutoServiceTest {
 		Long modbc = 1L;
 		String vendavel = "SIM";
 		ProdutoSubstTributaria subtribu = ProdutoSubstTributaria.NAO;
-
+		String enviar = "Salvar";
 		ProdutoMergerDTO dto = new ProdutoMergerDTO(codprod, codforne, codcategoria, codgrupo, balanca, descricao,
 				valorCusto, valorVenda, null, controleEstoque, situacao, unitario, subtribu, ncm, cest, tributacao,
-				modbc, vendavel);
+				modbc, vendavel, enviar);
 
 		doThrow(new RuntimeException("Erro simulado de inserção")).when(produtoRepository).insere(any(), any(), any(),
 				anyInt(), any(), any(), any(), any(), any(), any(), any(), anyInt(), any(), any(), any(), any(), any(),
@@ -362,10 +364,10 @@ class ProdutoServiceTest {
 		Long modbc = 1L;
 		String vendavel = "SIM";
 		ProdutoSubstTributaria subtribu = ProdutoSubstTributaria.NAO;
-
+		String enviar = "Salvar";
 		ProdutoMergerDTO dto = new ProdutoMergerDTO(codprod, codforne, codcategoria, codgrupo, balanca, descricao,
 				valorCusto, valorVenda, null, controleEstoque, situacao, unitario, subtribu, ncm, cest, tributacao,
-				modbc, vendavel);
+				modbc, vendavel, enviar);
 
 		doThrow(new RuntimeException("Erro simulado de atualização")).when(produtoRepository).atualiza(any(), any(),
 				any(), any(), anyInt(), any(), any(), any(), any(), any(), any(), any(), anyInt(), any(), any(), any(),
@@ -373,6 +375,61 @@ class ProdutoServiceTest {
 
 		String resultado = produtoService.merger(dto);
 
+		assertEquals("Erro a atualizar produto, chame o suporte", resultado);
+	}
+
+	@Test
+	void mergerInsereProdutoQuandoCodigoNull() {
+		ProdutoMergerDTO dto = new ProdutoMergerDTO(
+			null, 2L, 3L, 4L, 1, "Produto Null", 10.0, 20.0, null, "SIM", "ATIVO", "UN",
+			ProdutoSubstTributaria.SIM, "12345678", "123456", 6L, 7L, "SIM", "Salvar"
+		);
+		String resultado = produtoService.merger(dto);
+		verify(produtoRepository).insere(any(), any(), any(), anyInt(), any(), any(), any(), any(), any(), any(), any(), anyInt(), any(), any(), any(), any(), any(), any());
+		assertEquals("Produdo cadastrado com sucesso", resultado);
+	}
+
+	@Test
+	void mergerInsereProdutoQuandoCodigoZero() {
+		ProdutoMergerDTO dto = new ProdutoMergerDTO(
+			0L, 2L, 3L, 4L, 1, "Produto Zero", 10.0, 20.0, null, "SIM", "ATIVO", "UN",
+			ProdutoSubstTributaria.SIM, "12345678", "123456", 6L, 7L, "SIM", "Salvar"
+		);
+		String resultado = produtoService.merger(dto);
+		verify(produtoRepository).insere(any(), any(), any(), anyInt(), any(), any(), any(), any(), any(), any(), any(), anyInt(), any(), any(), any(), any(), any(), any());
+		assertEquals("Produdo cadastrado com sucesso", resultado);
+	}
+
+	@Test
+	void mergerInsereProdutoComExcecao() {
+		ProdutoMergerDTO dto = new ProdutoMergerDTO(
+			null, 2L, 3L, 4L, 1, "Produto Erro", 10.0, 20.0, null, "SIM", "ATIVO", "UN",
+			ProdutoSubstTributaria.SIM, "12345678", "123456", 6L, 7L, "SIM", "Salvar"
+		);
+		doThrow(new RuntimeException("Erro simulado")).when(produtoRepository).insere(any(), any(), any(), anyInt(), any(), any(), any(), any(), any(), any(), any(), anyInt(), any(), any(), any(), any(), any(), any());
+		String resultado = produtoService.merger(dto);
+		assertEquals("Erro a cadastrar produto, chame o suporte", resultado);
+	}
+
+	@Test
+	void mergerAtualizaProduto() {
+		ProdutoMergerDTO dto = new ProdutoMergerDTO(
+			1L, 2L, 3L, 4L, 1, "Produto Atualizado", 10.0, 20.0, null, "SIM", "ATIVO", "UN",
+			ProdutoSubstTributaria.SIM, "12345678", "123456", 6L, 7L, "SIM", "Salvar"
+		);
+		String resultado = produtoService.merger(dto);
+		verify(produtoRepository).atualiza(any(), any(), any(), any(), anyInt(), any(), any(), any(), any(), any(), any(), any(), anyInt(), any(), any(), any(), any(), any());
+		assertEquals("Produto atualizado com sucesso", resultado);
+	}
+
+	@Test
+	void mergerAtualizaProdutoComExcecao() {
+		ProdutoMergerDTO dto = new ProdutoMergerDTO(
+			1L, 2L, 3L, 4L, 1, "Produto Erro Atualiza", 10.0, 20.0, null, "SIM", "ATIVO", "UN",
+			ProdutoSubstTributaria.SIM, "12345678", "123456", 6L, 7L, "SIM", "Salvar"
+		);
+		doThrow(new RuntimeException("Erro simulado")).when(produtoRepository).atualiza(any(), any(), any(), any(), anyInt(), any(), any(), any(), any(), any(), any(), any(), anyInt(), any(), any(), any(), any(), any());
+		String resultado = produtoService.merger(dto);
 		assertEquals("Erro a atualizar produto, chame o suporte", resultado);
 	}
 }
