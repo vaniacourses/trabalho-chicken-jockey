@@ -1,0 +1,130 @@
+{
+	"info": {
+		"_postman_id": "unique-id-for-cartao-lancamento",
+		"name": "PDV-CartaoLancamento",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28265523"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080"
+		}
+	],
+	"item": [
+		{
+			"name": "CartaoLancamento",
+			"item": [
+				{
+					"name": "Listar CartaoLancamentos",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const html = pm.response.text();",
+									"pm.test(\"Status 200 OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Título da página presente\", function () {",
+									"    pm.expect(html).to.include(\"<title>PDV</title>\");",
+									"});",
+									"pm.test(\"Tabela de lançamentos presente\", function () {",
+									"    pm.expect(html).to.include('<table class=\"table table-striped \"');",
+									"    pm.expect(html).to.include('<thead class=\"cabeca-tabela-principal\">');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/cartaolancamentos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cartaolancamentos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Processar CartaoLancamento",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"pm.test(\"Status 200 OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Processamento realizado com sucesso\", function () {",
+									"    pm.expect(jsonData).to.eql(\"Processamento realizado com sucesso\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/cartaolancamentos/{codigo}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cartaolancamentos",
+								"{codigo}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Antecipar CartaoLancamento",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"pm.test(\"Status 200 OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Antecipação realizada com sucesso\", function () {",
+									"    pm.expect(jsonData).to.eql(\"Antecipação realizada com sucesso\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/cartaolancamentos/antecipar/{codigo}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cartaolancamentos",
+								"antecipar",
+								"{codigo}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
