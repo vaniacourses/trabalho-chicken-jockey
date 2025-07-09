@@ -1,0 +1,1031 @@
+{
+	"info": {
+		"_postman_id": "bed23bf5-2c14-4afd-88a6-2a30d6d59511",
+		"name": "PDV-QUALIDADE _E_TESTE_PRODUTO_JOAO_PEDRO",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "11107002"
+	},
+	"item": [
+		{
+			"name": "Recebimentos",
+			"item": [
+				{
+					"name": "Listar Recebimentos",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const html = pm.response.text();\r",
+									"\r",
+									"pm.test(\"Status 200 OK\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time - Recebimentos\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Título da página presente\", function () {\r",
+									"    pm.expect(html).to.include(\"<title>PDV</title>\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Tabela principal de recebimentos\", function () {\r",
+									"    pm.expect(html).to.include('<table class=\"table cabeca-tabela-principal\">');\r",
+									"    pm.expect(html).to.include('<td class=\"col-md-3\">Cliente</td>');\r",
+									"    pm.expect(html).to.include('Valor Total');\r",
+									"    pm.expect(html).to.include('Recebido');\r",
+									"    pm.expect(html).to.include('Desconto');\r",
+									"    pm.expect(html).to.include('Restante');\r",
+									"    pm.expect(html).to.include('Sequencia');\r",
+									"    pm.expect(html).to.include('Data');\r",
+									"    pm.expect(html).to.include('Vencimento');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Tabela de parcelas\", function () {\r",
+									"    pm.expect(html).to.include('<div id=\"table-parcelas-cliente\">');\r",
+									"    pm.expect(html).to.include('<table class=\"table table-hover tabela-receber\">');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Botão de receber vários\", function () {\r",
+									"    pm.expect(html).to.include('href=\"/receber/parcelas\"');\r",
+									"    pm.expect(html).to.include('class=\"btn btn-access btn-receber-varios\"');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Texto de total a receber\", function () {\r",
+									"    pm.expect(html).to.include('<h3 class=\"total_receber\">Total: R$ 0,00</h3>');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Select de clientes carregado\", function () {\r",
+									"    pm.expect(html).to.include('<select class=\"form-control selectpicker codcliente\"');\r",
+									"    pm.expect(html).to.include('<option value=\"1\">João Rafael Mendes Nogueira</option>');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Checkbox de pagamento confirmados\", function () {\r",
+									"    pm.expect(html).to.include('<input type=\"checkbox\" id=\"pago1\" name=\"pago\" value=\"true\" />');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Sidebar com link para Receber\", function () {\r",
+									"    pm.expect(html).to.include('<a href=\"/receber\"><img class=\"imagem-menu\" alt=\"Receber\"');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{baseUrl}}/receber",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"receber"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cadastrar Produto : FALHA",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"const html = pm.response.text();\r",
+									"\r",
+									"pm.test(\"Status 200 OK\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Mensagem de erro presente\", function () {\r",
+									"    pm.expect(html).to.include(\"Erro a cadastrar produto, chame o suporte\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Alerta de erro presente\", function () {\r",
+									"    pm.expect(html).to.include('class=\"alert alert-success alert-dismissable\"');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Título da página presente\", function () {\r",
+									"    pm.expect(html).to.include(\"<title>PDV</title>\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Tabela de produtos presente\", function () {\r",
+									"    pm.expect(html).to.include('<table class=\"table table-striped \"');\r",
+									"    pm.expect(html).to.include('<thead class=\"cabeca-tabela-principal\">');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Colunas da tabela corretas\", function () {\r",
+									"    pm.expect(html).to.include('Código');\r",
+									"    pm.expect(html).to.include('Descrição');\r",
+									"    pm.expect(html).to.include('Valor Venda');\r",
+									"    pm.expect(html).to.include('Grupo');\r",
+									"    pm.expect(html).to.include('Categoria');\r",
+									"    pm.expect(html).to.include('Estoque');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Botão Novo presente\", function () {\r",
+									"    pm.expect(html).to.include('href=\"/produto/form\" class=\"btn btn-azul-padrao\"');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Produtos listados na tabela\", function () {\r",
+									"    pm.expect(html).to.include('Picolé');\r",
+									"    pm.expect(html).to.include('Sorvete 3');\r",
+									"    pm.expect(html).to.include('Biscoito - ATUALIZADO');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Paginação presente\", function () {\r",
+									"    pm.expect(html).to.include('class=\"btn btn-info btn-anterior');\r",
+									"    pm.expect(html).to.include('class=\"btn btn-info btn-proxima\"');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ícone de edição presente\", function () {\r",
+									"    pm.expect(html).to.include('glyphicon glyphicon-pencil');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "codigo",
+									"value": "2",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "descricao",
+									"value": "Sorvete 3",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "fornecedor",
+									"value": "1",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "categoria",
+									"value": "1",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "grupo",
+									"value": "1",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "balanca",
+									"value": "NAO",
+									"type": "text"
+								},
+								{
+									"key": "valor_custo",
+									"value": "6,00",
+									"type": "text"
+								},
+								{
+									"key": "valor_venda",
+									"value": "21,00",
+									"type": "text"
+								},
+								{
+									"key": "data_validade",
+									"value": "12/07/2025",
+									"type": "text"
+								},
+								{
+									"key": "controla_estoque",
+									"value": "SIM",
+									"type": "text"
+								},
+								{
+									"key": "ativo",
+									"value": "ATIVO",
+									"type": "text"
+								},
+								{
+									"key": "unidade",
+									"value": "47",
+									"type": "text"
+								},
+								{
+									"key": "subtributaria",
+									"value": "NAO",
+									"type": "text"
+								},
+								{
+									"key": "ncm",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "cest",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "tributacao",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "modBcIcms",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "vendavel",
+									"value": "SIM",
+									"type": "text"
+								},
+								{
+									"key": "enviar",
+									"value": "Salvar",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8080/produto",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"produto"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Produto : SUCESSO",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 200 OK\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Mensagem de sucesso presente\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"Produto atualizado com sucesso\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Formulário de produto presente\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include('<form method=\"post\" action=\"/produto\" id=\"form_produto\">');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Campo descrição preenchido\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include('value=\"Sorvete 3\"');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Campo código correto\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include('name=\"codigo\" value=\"27\"');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Botão Salvar presente\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include('name=\"enviar\" value=\"Salvar\"');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Campo valor venda correto\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include('name=\"valor_venda\" type=\"text\" class=\"form-control js-mascara\" value=\"21,00\"');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Fornecedor padrão selecionado\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include('<option value=\"1\" selected=\"selected\">Fornecedor Padrão</option>');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Categoria padrão selecionada\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include('<option value=\"1\" selected=\"selected\">Padrão</option>');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Grupo padrão selecionado\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include('option value=\"1\"');\r",
+									"    pm.expect(pm.response.text()).to.include('selected');\r",
+									"    pm.expect(pm.response.text()).to.include('>Padrão<');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Campo unidade correto\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include('name=\"unidade\" type=\"text\" class=\"form-control\" value=\"47\"');\r",
+									"});\r",
+									"\r",
+									"const html = pm.response.text().replace(/\\\\s+/g, ' ');\r",
+									"\r",
+									"pm.test(\"Campo data validade correto\", function () {\r",
+									"    pm.expect(html).to.include('name=\"data_validade\"');\r",
+									"    pm.expect(html).to.include('value=\"12/07/2025\"');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Campo valor custo correto\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include('name=\"valor_custo\" type=\"text\" class=\"form-control js-mascara\" value=\"6,00\"');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Campo balança correto\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include('<option value=\"NAO\" selected=\"selected\">NAO</option>');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Campo controla_estoque correto\", function () {\r",
+									"    pm.expect(html).to.include('option value=\"SIM\" selected');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Campo vendavel correto\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include('<option value=\"SIM\" selected=\"selected\">SIM</option>');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Campo subtributaria correto\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include('<option value=\"NAO\" selected=\"selected\">NAO</option>');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Campo ativo correto\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include('<option value=\"ATIVO\">ATIVO</option>');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Campo modBcIcms correto\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include('<option value=\"\"></option>');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Campo tributacao correto\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include('<option value=\"\"></option>');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "codigo",
+									"value": "27",
+									"type": "text"
+								},
+								{
+									"key": "descricao",
+									"value": "Sorvete 3",
+									"type": "text"
+								},
+								{
+									"key": "fornecedor",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "categoria",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "grupo",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "balanca",
+									"value": "NAO",
+									"type": "text"
+								},
+								{
+									"key": "valor_custo",
+									"value": "6,00",
+									"type": "text"
+								},
+								{
+									"key": "valor_venda",
+									"value": "21,00",
+									"type": "text"
+								},
+								{
+									"key": "data_validade",
+									"value": "12/07/2025",
+									"type": "text"
+								},
+								{
+									"key": "controla_estoque",
+									"value": "SIM",
+									"type": "text"
+								},
+								{
+									"key": "ativo",
+									"value": "ATIVO",
+									"type": "text"
+								},
+								{
+									"key": "unidade",
+									"value": "47",
+									"type": "text"
+								},
+								{
+									"key": "subtributaria",
+									"value": "NAO",
+									"type": "text"
+								},
+								{
+									"key": "ncm",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "cest",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "tributacao",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "modBcIcms",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "vendavel",
+									"value": "SIM",
+									"type": "text"
+								},
+								{
+									"key": "enviar",
+									"value": "Salvar",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8080/produto",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"produto"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Produto :  FALHA",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"const html = pm.response.text();",
+									"",
+									"pm.test(\"Erro ao enviar descrição vazia\", function () {",
+									"    pm.expect(html).to.include(\"Erro a atualizar produto, chame o suporte\");",
+									"});",
+									"",
+									"pm.test(\"Erro ao enviar fornecedor vazio\", function () {",
+									"    pm.expect(html).to.include(\"Erro a atualizar produto, chame o suporte\");",
+									"});",
+									"",
+									"pm.test(\"Erro ao enviar categoria vazia\", function () {",
+									"    pm.expect(html).to.include(\"Erro a atualizar produto, chame o suporte\");",
+									"});",
+									"",
+									"pm.test(\"Erro ao enviar grupo vazio\", function () {",
+									"    pm.expect(html).to.include(\"Erro a atualizar produto, chame o suporte\");",
+									"});",
+									"",
+									"pm.test(\"Erro ao enviar valor_venda vazio\", function () {",
+									"    pm.expect(html).to.include(\"Erro a atualizar produto, chame o suporte\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "codigo",
+									"value": "2",
+									"type": "text"
+								},
+								{
+									"key": "descricao",
+									"value": "Sorvete 3",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "fornecedor",
+									"value": "1",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "categoria",
+									"value": "1",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "grupo",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "balanca",
+									"value": "NAO",
+									"type": "text"
+								},
+								{
+									"key": "valor_custo",
+									"value": "6,00",
+									"type": "text"
+								},
+								{
+									"key": "valor_venda",
+									"value": "21,00",
+									"type": "text"
+								},
+								{
+									"key": "data_validade",
+									"value": "12/07/2025",
+									"type": "text"
+								},
+								{
+									"key": "controla_estoque",
+									"value": "SIM",
+									"type": "text"
+								},
+								{
+									"key": "ativo",
+									"value": "ATIVO",
+									"type": "text"
+								},
+								{
+									"key": "unidade",
+									"value": "47",
+									"type": "text"
+								},
+								{
+									"key": "subtributaria",
+									"value": "NAO",
+									"type": "text"
+								},
+								{
+									"key": "ncm",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "cest",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "tributacao",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "modBcIcms",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "vendavel",
+									"value": "SIM",
+									"type": "text"
+								},
+								{
+									"key": "enviar",
+									"value": "Salvar",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8080/produto",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"produto"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar Produto por Descrição : SUCESSO",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"const html = pm.response.text();\r",
+									"\r",
+									"pm.test(\"Status 200 OK\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Título da página presente\", function () {\r",
+									"    pm.expect(html).to.include(\"<title>PDV</title>\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Campo de busca preenchido com valor pesquisado\", function () {\r",
+									"    pm.expect(html).to.include('name=\"descricao\" value=\"Tomate\"');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Tabela de produtos presente\", function () {\r",
+									"    pm.expect(html).to.include('<table class=\"table table-striped \"');\r",
+									"    pm.expect(html).to.include('<thead class=\"cabeca-tabela-principal\">');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Produtos filtrados corretamente\", function () {\r",
+									"    pm.expect(html).to.include('Tomate');\r",
+									"    pm.expect(html).to.include('class=\"text-center\">24<');\r",
+									"    pm.expect(html).to.include('class=\"text-center\">25<');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Paginação correta para resultado filtrado\", function () {\r",
+									"    pm.expect(html).to.include('class=\"btn btn-info btn-anterior disabled\"');\r",
+									"    pm.expect(html).to.include('class=\"btn btn-info btn-proxima disabled\"');\r",
+									"    pm.expect(html).to.include('1/1');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ícone de edição presente\", function () {\r",
+									"    pm.expect(html).to.include('glyphicon glyphicon-pencil');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/produto?descricao=Tomate",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"produto"
+							],
+							"query": [
+								{
+									"key": "descricao",
+									"value": "Tomate"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar Produto por Descrição : LISTA VAZIA",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const html = pm.response.text();\r",
+									"\r",
+									"pm.test(\"Status 200 OK\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Título da página presente\", function () {\r",
+									"    pm.expect(html).to.include(\"<title>PDV</title>\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Campo de busca preenchido com valor pesquisado\", function () {\r",
+									"    pm.expect(html).to.include('name=\"descricao\" value=\"Cenoura\"');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Tabela de produtos presente\", function () {\r",
+									"    pm.expect(html).to.include('<table class=\"table table-striped \"');\r",
+									"    pm.expect(html).to.include('<thead class=\"cabeca-tabela-principal\">');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Tabela vazia (sem produtos)\"), function(){\r",
+									"    pm.expect(html.replace(/\\\\s+/g, '')).to.include('<tbody></tbody>');\r",
+									"}\r",
+									"\r",
+									"pm.test(\"Paginação correta para resultado vazio\", function () {\r",
+									"    pm.expect(html).to.include('class=\"btn btn-info btn-anterior disabled\"');\r",
+									"    pm.expect(html).to.include('class=\"btn btn-info btn-proxima disabled\"');\r",
+									"    pm.expect(html).to.include('1/0');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Botão Novo presente\", function () {\r",
+									"    pm.expect(html).to.include('href=\"/produto/form\"');\r",
+									"    pm.expect(html).to.include('class=\"btn btn-azul-padrao\"');\r",
+									"    pm.expect(html).to.include('Novo');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/produto?descricao=Cenoura",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"produto"
+							],
+							"query": [
+								{
+									"key": "descricao",
+									"value": "Cenoura"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Login",
+			"item": [
+				{
+					"name": "Fazer Login : SUCESSO",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"TestaAcessibilidade\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.response.to.have.header(\"Content-Type\", \"text/html;charset=UTF-8\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"TestaResponseTime\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+									"});\r",
+									"\r",
+									"const html = pm.response.text();\r",
+									"\r",
+									"pm.test(\"Status 200 OK\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Título da página principal presente\", function () {\r",
+									"    pm.expect(html).to.include(\"<title>PDV</title>\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Usuário logado exibido\", function () {\r",
+									"    pm.expect(html).to.include(\"Usuário: gerente\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Menu lateral presente\", function () {\r",
+									"    pm.expect(html).to.include('class=\"left\"');\r",
+									"    pm.expect(html).to.include('href=\"/produto\"');\r",
+									"    pm.expect(html).to.include('href=\"/venda/status/ABERTA\"');\r",
+									"    pm.expect(html).to.include('href=\"/caixa\"');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Painéis de dashboard presentes\", function () {\r",
+									"    pm.expect(html).to.include('Pedidos em Aberto');\r",
+									"    pm.expect(html).to.include('Total a Receber');\r",
+									"    pm.expect(html).to.include('Total a Pagar');\r",
+									"    pm.expect(html).to.include('NFe Emitidas');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "user",
+									"value": "gerente",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "123",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fazer Login : FALHA",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const html = pm.response.text();\r",
+									"\r",
+									"pm.test(\"Status 200 OK\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Título da página de login presente\", function () {\r",
+									"    pm.expect(html).to.include(\"<title>PDV - Login</title>\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Mensagem de erro de login presente\", function () {\r",
+									"    pm.expect(html).to.include(\"Usuário ou senha inválidos\");\r",
+									"    pm.expect(html).to.include('class=\"alert alert-danger\"');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Formulário de login presente\", function () {\r",
+									"    pm.expect(html).to.include('<form action=\"/login\" method=\"post\">');\r",
+									"    pm.expect(html).to.include('name=\"username\"');\r",
+									"    pm.expect(html).to.include('name=\"password\"');\r",
+									"    pm.expect(html).to.include('id=\"btn-login\"');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "user",
+									"value": "gerente",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "1234",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}
