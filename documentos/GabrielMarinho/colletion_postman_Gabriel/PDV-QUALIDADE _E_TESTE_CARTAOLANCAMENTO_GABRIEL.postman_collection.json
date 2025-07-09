@@ -13,6 +13,176 @@
 	],
 	"item": [
 		{
+			"name": "Login",
+			"item": [
+				{
+					"name": "Fazer Login : SUCESSO",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"TestaAcessibilidade\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.response.to.have.header(\"Content-Type\", \"text/html;charset=UTF-8\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"TestaResponseTime\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+									"});\r",
+									"\r",
+									"const html = pm.response.text();\r",
+									"\r",
+									"pm.test(\"Status 200 OK\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Título da página principal presente\", function () {\r",
+									"    pm.expect(html).to.include(\"<title>PDV</title>\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Usuário logado exibido\", function () {\r",
+									"    pm.expect(html).to.include(\"Usuário: gerente\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Menu lateral presente\", function () {\r",
+									"    pm.expect(html).to.include('class=\"left\"');\r",
+									"    pm.expect(html).to.include('href=\"/produto\"');\r",
+									"    pm.expect(html).to.include('href=\"/venda/status/ABERTA\"');\r",
+									"    pm.expect(html).to.include('href=\"/caixa\"');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Painéis de dashboard presentes\", function () {\r",
+									"    pm.expect(html).to.include('Pedidos em Aberto');\r",
+									"    pm.expect(html).to.include('Total a Receber');\r",
+									"    pm.expect(html).to.include('Total a Pagar');\r",
+									"    pm.expect(html).to.include('NFe Emitidas');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "user",
+									"value": "gerente",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "123",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fazer Login : FALHA",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const html = pm.response.text();\r",
+									"\r",
+									"pm.test(\"Status 200 OK\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Título da página de login presente\", function () {\r",
+									"    pm.expect(html).to.include(\"<title>PDV - Login</title>\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Mensagem de erro de login presente\", function () {\r",
+									"    pm.expect(html).to.include(\"Usuário ou senha inválidos\");\r",
+									"    pm.expect(html).to.include('class=\"alert alert-danger\"');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Formulário de login presente\", function () {\r",
+									"    pm.expect(html).to.include('<form action=\"/login\" method=\"post\">');\r",
+									"    pm.expect(html).to.include('name=\"username\"');\r",
+									"    pm.expect(html).to.include('name=\"password\"');\r",
+									"    pm.expect(html).to.include('id=\"btn-login\"');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "user",
+									"value": "gerente",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "1234",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "CartaoLancamento",
 			"item": [
 				{
