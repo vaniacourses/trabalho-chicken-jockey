@@ -22,25 +22,23 @@ public class VendaServiceSeleniumTest {
 
     private static final String BASE_URL = "http://localhost:8080";
 
+    //Esse teste de selenium cobre a abertura de uma venda, a inserção de um pedido nela e o fechamento da venda
+    //No setup é criado um caixa e um título, pois são pré-requisitos para uma venda
+
     private void criarTitulo() {
         try {
             driver.get(BASE_URL + "/titulos");
             WebElement botaoNovo = wait.until(
                     ExpectedConditions.elementToBeClickable(By.linkText("Novo")));
             botaoNovo.click();
-
             WebElement campoDescricao = wait.until(
                     ExpectedConditions.elementToBeClickable(By.id("descricao")));
             campoDescricao.clear();
             campoDescricao.sendKeys("selenium");
-
             WebElement botaoSalvar = wait.until(
                     ExpectedConditions.elementToBeClickable(By.cssSelector("input[type='submit'][value='Salvar']")));
             botaoSalvar.click();
-
-            // Pequena pausa para garantir que a ação foi processada
             Thread.sleep(1000);
-
         } catch (Exception e) {
             System.out.println("Erro ao criar título: " + e.getMessage());
         }
@@ -49,30 +47,20 @@ public class VendaServiceSeleniumTest {
     private void abrirCaixa() {
         try {
             driver.get(BASE_URL + "/caixa");
-
-            // Clica no botão "Abrir Novo"
             WebElement botaoAbrirNovo = wait.until(
                     ExpectedConditions.elementToBeClickable(By.linkText("Abrir Novo")));
             botaoAbrirNovo.click();
-
-            // Preenche a observação
             WebElement campoObservacao = wait.until(
                     ExpectedConditions.elementToBeClickable(By.id("descricao")));
             campoObservacao.clear();
             campoObservacao.sendKeys("Teste Selenium");
-
-            // Preenche o valor de abertura
             WebElement campoValorAbertura = wait.until(
                     ExpectedConditions.elementToBeClickable(By.id("valorAbertura")));
             campoValorAbertura.clear();
             campoValorAbertura.sendKeys("100");
-
-            // Clica no botão "Abrir"
             WebElement botaoAbrir = wait.until(
                     ExpectedConditions.elementToBeClickable(By.linkText("Abrir")));
             botaoAbrir.click();
-
-            // Valida se apareceu mensagem de sucesso
             WebElement mensagemSucessoCaixa = wait.until(
                     ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".alert-success span")));
             assertTrue(mensagemSucessoCaixa.isDisplayed(), "Caixa não foi aberto com sucesso!");
@@ -87,21 +75,17 @@ public class VendaServiceSeleniumTest {
         wait = new WebDriverWait(driver, 10);
         driver.manage().window().maximize();
 
-        loginPage = new LoginPage(driver, wait);
-
+        
         // Login
+        loginPage = new LoginPage(driver, wait);
         loginPage.navigateTo(BASE_URL + "/login");
         assertTrue(loginPage.isLoginPageDisplayed(), "Página de Login não foi exibida.");
         loginPage.login("gerente", "123");
-
-        // Verifica se o login funcionou verificando se foi redirecionado
         wait.until(ExpectedConditions.not(ExpectedConditions.urlContains("/login")));
 
         // Criação de título e abertura de caixa
         criarTitulo();
         abrirCaixa();
-
-        // Acessa a página de venda aberta
         driver.get(BASE_URL + "/venda/status/ABERTA");
         WebElement tituloPedidos = wait.until(
                 ExpectedConditions.visibilityOfElementLocated(By.cssSelector("h1.titulo-h1")));
@@ -110,6 +94,8 @@ public class VendaServiceSeleniumTest {
 
     @Test
     public void criaEFechaVenda() throws InterruptedException {
+
+
         //Abertura da venda
         WebElement botaoNovoPedido = wait.until(
                 ExpectedConditions.elementToBeClickable(By.linkText("Novo Pedido")));
@@ -129,6 +115,7 @@ public class VendaServiceSeleniumTest {
                 ExpectedConditions.elementToBeClickable(By.id("btn-salva")));
         botaoSalvar.click();
         Thread.sleep(3000);
+
 
         // Aqui é onde o produto é adicionado à venda. Nesse caso, foi escolhido o picolé
         WebElement botaoDropdown = wait.until(
@@ -151,6 +138,7 @@ public class VendaServiceSeleniumTest {
                 ExpectedConditions.elementToBeClickable(By.cssSelector(".js-addvenda-produto")));
         botaoInserir.click();
         Thread.sleep(3000);
+
 
         // Aqui é onde temos o fechamento da venda
         WebElement botaoGerarVenda = wait.until(
