@@ -77,6 +77,22 @@ public class CaixaServiceSeleniumTest {
     }
 
     @Test
+    public void testAbrirCaixaComValorNegativo() {
+        boolean erro = false;
+        try {
+            caixaListPage.clickOpenCaixa();
+            assertTrue(caixaFormPage.isFormLoaded(), "Formulário de abertura de caixa não foi carregado.");
+            String descricao = "Caixa Valor Negativo " + System.currentTimeMillis();
+            caixaFormPage.openCaixa("CAIXA", "-50,00", descricao);
+            // Espera mensagem de erro
+            erro = caixaFormPage.hasErrorMessage();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        assertTrue(erro, "Mensagem de erro deve aparecer ao tentar abrir caixa com valor negativo.");
+    }
+
+    @Test
     public void testFecharCaixa() {
         boolean success = false;
         try {
@@ -142,4 +158,4 @@ public class CaixaServiceSeleniumTest {
             driver.quit();
         }
     }
-} 
+    }
