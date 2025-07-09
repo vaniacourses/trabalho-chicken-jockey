@@ -5,7 +5,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +16,10 @@ import net.originmobi.pdv.enumerado.caixa.EstiloLancamento;
 import net.originmobi.pdv.enumerado.caixa.TipoLancamento;
 import net.originmobi.pdv.enumerado.cartao.CartaoSituacao;
 import net.originmobi.pdv.enumerado.cartao.CartaoTipo;
+import net.originmobi.pdv.exception.ErroAntecipacaoCartaoException;
+import net.originmobi.pdv.exception.ErroProcessamentoCartaoException;
+import net.originmobi.pdv.exception.RegistroJaAntecipadoException;
+import net.originmobi.pdv.exception.RegistroJaProcessadoException;
 import net.originmobi.pdv.filter.CartaoFilter;
 import net.originmobi.pdv.model.Caixa;
 import net.originmobi.pdv.model.CaixaLancamento;
@@ -31,25 +36,31 @@ import net.originmobi.pdv.utilitarios.DataAtual;
 @Service
 public class CartaoLancamentoService {
 
-	@Autowired
-	private CartaoLancamentoRepository repository;
+	private static final Logger logger = LoggerFactory.getLogger(CartaoLancamentoService.class);
+	private final CartaoLancamentoRepository repository;
+	private final CaixaLancamentoService caixaLancamentos;
+	private final UsuarioService usuarios;
 
-	@Autowired
-	private CaixaLancamentoService caixaLancamentos;
+	public CartaoLancamentoService(CartaoLancamentoRepository repository, 
+								  CaixaLancamentoService caixaLancamentos, 
+								  UsuarioService usuarios) {
+		this.repository = repository;
+		this.caixaLancamentos = caixaLancamentos;
+		this.usuarios = usuarios;
+	}
 
-	@Autowired
-	private UsuarioService usuarios;
+	public void lancamento(Double vlParcela, Optional<Titulo> titulo) {
+		if (!titulo.isPresent()) {
+			return;
+		}
 
-	private LocalDate dataAtual;
-
-	public void lancamento(Double vl_parcela, Optional<Titulo> titulo) {
 		Double taxa = 0.0;
-		Double vl_taxa = 0.0;
-		Double vl_liq_parcela = 0.0;
+		Double vlTaxa;
+		Double vlLiqParcela;
 
-		Double taxa_ante = 0.0;
-		Double vl_taxa_ante = 0.0;
-		Double vl_liq_ant = 0.0;
+		Double taxaAnte;
+		Double vlTaxaAnte;
+		Double vlLiqAnt;
 
 		CartaoTipo tipo = null;
 		int dias = 0;
@@ -66,27 +77,27 @@ public class CartaoLancamentoService {
 			tipo = CartaoTipo.CREDITO;
 		}
 
-		vl_taxa = (vl_parcela * taxa) / 100;
-		vl_liq_parcela = vl_parcela - vl_taxa;
+		vlTaxa = (vlParcela * taxa) / 100;
+		vlLiqParcela = vlParcela - vlTaxa;
 
-		taxa_ante = titulo.get().getMaquina().getTaxa_antecipacao();
-		vl_taxa_ante = (vl_parcela * taxa_ante) / 100;
-		vl_liq_ant = vl_parcela - vl_taxa_ante;
+		taxaAnte = titulo.get().getMaquina().getTaxa_antecipacao();
+		vlTaxaAnte = (vlParcela * taxaAnte) / 100;
+		vlLiqAnt = vlParcela - vlTaxaAnte;
 
 		MaquinaCartao maquinaCartao = titulo.get().getMaquina();
 
 		DataAtual data = new DataAtual();
-		dataAtual = LocalDate.now();
-		String data_recebimento = data.DataAtualIncrementa(dias);
+		LocalDate dataAtual = LocalDate.now();
+		String dataRecebimento = data.DataAtualIncrementa(dias);
 
-		CartaoLancamento lancamento = new CartaoLancamento(vl_parcela, taxa, vl_taxa, vl_liq_parcela, taxa_ante,
-				vl_taxa_ante, vl_liq_ant, maquinaCartao, tipo, CartaoSituacao.APROCESSAR,
-				Date.valueOf(data_recebimento), Date.valueOf(dataAtual));
+		CartaoLancamento lancamento = new CartaoLancamento(vlParcela, taxa, vlTaxa, vlLiqParcela, taxaAnte,
+				vlTaxaAnte, vlLiqAnt, maquinaCartao, tipo, CartaoSituacao.APROCESSAR,
+				Date.valueOf(dataRecebimento), Date.valueOf(dataAtual));
 
 		try {
 			repository.save(lancamento);
 		} catch (Exception e) {
-			System.out.println(e);
+			logger.error("Erro ao salvar CartaoLancamento", e);
 		}
 
 	}
@@ -94,19 +105,20 @@ public class CartaoLancamentoService {
 	public List<CartaoLancamento> listar(CartaoFilter filter) {
 		String situacao = filter.getSituacao() == null ? "%" : filter.getSituacao().toString();
 		String tipo = filter.getTipo() == null ? "%" : filter.getTipo().toString();
-		String data_recebimento = filter.getData_recebimento() == null || filter.getData_recebimento().isEmpty() ? "%"
-				: filter.getData_recebimento().toString().replace("/", "-");
-		return repository.buscaLancamentos(situacao, tipo, data_recebimento);
+		String dataRecebimento = (filter.getData_recebimento() == null || filter.getData_recebimento().isEmpty())
+			    ? "%"
+			    : filter.getData_recebimento().replace("/", "-");
+		return repository.buscaLancamentos(situacao, tipo, dataRecebimento);
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 	public String processar(CartaoLancamento cartaoLancamento) {
 
 		if (cartaoLancamento.getSituacao().equals(CartaoSituacao.PROCESSADO))
-			throw new RuntimeException("Registro já processado");
+			throw new RegistroJaProcessadoException();
 
 		if (cartaoLancamento.getSituacao().equals(CartaoSituacao.ANTECIPADO))
-			throw new RuntimeException("Registro já foi antecipado");
+			throw new RegistroJaAntecipadoException();
 
 		Double valor = cartaoLancamento.getVlLiqParcela();
 		TipoLancamento tipo = TipoLancamento.RECEBIMENTO;
@@ -122,13 +134,13 @@ public class CartaoLancamentoService {
 		try {
 			caixaLancamentos.lancamento(lancamento);
 		} catch (Exception e) {
-			throw new RuntimeException("Erro ao tentar realizar o processamento, chame o suporte");
+			throw new ErroProcessamentoCartaoException("Erro ao tentar realizar o processamento, chame o suporte", e);
 		}
 
 		try {
 			cartaoLancamento.setSituacao(CartaoSituacao.PROCESSADO);
 		} catch (Exception e) {
-			throw new RuntimeException("Erro ao tentar realizar o processamento, chame o suporte");
+			throw new ErroProcessamentoCartaoException("Erro ao tentar realizar o processamento, chame o suporte", e);
 		}
 
 		return "Processamento realizado com sucesso";
@@ -136,10 +148,10 @@ public class CartaoLancamentoService {
 
 	public String antecipar(CartaoLancamento cartaoLancamento) {
 		if (cartaoLancamento.getSituacao().equals(CartaoSituacao.PROCESSADO))
-			throw new RuntimeException("Registro já processado");
+			throw new RegistroJaProcessadoException();
 
 		if (cartaoLancamento.getSituacao().equals(CartaoSituacao.ANTECIPADO))
-			throw new RuntimeException("Registro já foi antecipado");
+			throw new RegistroJaAntecipadoException();
 
 		Double valor = cartaoLancamento.getVlLiqAntecipacao();
 		TipoLancamento tipo = TipoLancamento.RECEBIMENTO;
@@ -156,14 +168,14 @@ public class CartaoLancamentoService {
 		try {
 			caixaLancamentos.lancamento(lancamento);
 		} catch (Exception e) {
-			throw new RuntimeException("Erro ao tentar realizar a antecipação, chame o suporte");
+			throw new ErroAntecipacaoCartaoException("Erro ao tentar realizar a antecipação, chame o suporte", e);
 		}
 
 		try {
 			cartaoLancamento.setSituacao(CartaoSituacao.ANTECIPADO);
 			repository.save(cartaoLancamento);
 		} catch (Exception e) {
-			throw new RuntimeException("Erro ao tentar realizar a antecipação, chame o suporte");
+			throw new ErroAntecipacaoCartaoException("Erro ao tentar realizar a antecipação, chame o suporte", e);
 		}
 
 		return "Antecipação realizada com sucesso";

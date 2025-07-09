@@ -63,4 +63,4 @@ public class LoginPage {
 	public String getErrorMessage() {
 		return wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessage)).getText();
 	}
-} 
+}

@@ -1,0 +1,560 @@
+{
+	"info": {
+		"_postman_id": "d99e1b1c-2a9b-4936-9843-66bc8e235b03",
+		"name": "PDV-ChickenJockey-ErikHeringer",
+		"description": "Testes relacionados à venda.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39452213"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"item": [
+				{
+					"name": "Login - Valido",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Sucesso no Login!!!\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.response.to.have.header(\"Content-Type\", \"text/html;charset=UTF-8\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"TestaResponseTime\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+									"});\r",
+									"\r",
+									"const html = pm.response.text();\r",
+									"\r",
+									"pm.test(\"Título da página principal presente\", function () {\r",
+									"    pm.expect(html).to.include(\"<title>PDV</title>\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Usuário logado exibido\", function () {\r",
+									"    pm.expect(html).to.include(\"Usuário: gerente\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Menu lateral presente\", function () {\r",
+									"    pm.expect(html).to.include('class=\"left\"');\r",
+									"    pm.expect(html).to.include('href=\"/produto\"');\r",
+									"    pm.expect(html).to.include('href=\"/venda/status/ABERTA\"');\r",
+									"    pm.expect(html).to.include('href=\"/caixa\"');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Painéis de dashboard presentes\", function () {\r",
+									"    pm.expect(html).to.include('Pedidos em Aberto');\r",
+									"    pm.expect(html).to.include('Total a Receber');\r",
+									"    pm.expect(html).to.include('Total a Pagar');\r",
+									"    pm.expect(html).to.include('NFe Emitidas');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "user",
+									"value": "gerente",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "123",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8080/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login - Invalido",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const html = pm.response.text();\r",
+									"\r",
+									"pm.test(\"Status 200 OK\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Título da página de login presente\", function () {\r",
+									"    pm.expect(html).to.include(\"<title>PDV - Login</title>\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Mensagem de erro de login presente\", function () {\r",
+									"    pm.expect(html).to.include(\"Usuário ou senha inválidos\");\r",
+									"    pm.expect(html).to.include('class=\"alert alert-danger\"');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Formulário de login presente\", function () {\r",
+									"    pm.expect(html).to.include('<form action=\"/login\" method=\"post\">');\r",
+									"    pm.expect(html).to.include('name=\"username\"');\r",
+									"    pm.expect(html).to.include('name=\"password\"');\r",
+									"    pm.expect(html).to.include('id=\"btn-login\"');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "user",
+									"value": "gerente",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "senhaErradaUhul",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8080/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Venda",
+			"item": [
+				{
+					"name": "Listar Vendas em Aberto",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Página contém título 'Pedidos'\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"<h1 class=\\\"titulo-h1\\\">Pedidos</h1>\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Contém botão 'Novo Pedido'\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"Novo Pedido\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Contém texto 'Proxima'\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\">Proxima<\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Contém status 'ABERTO'\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\">ABERTO<\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Tempo de resposta menor que 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/venda/status/ABERTA",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"venda",
+								"status",
+								"ABERTA"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Vendas Fechadas",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Página contém título 'Pedidos'\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"<h1 class=\\\"titulo-h1\\\">Pedidos</h1>\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Contém botão 'Novo Pedido'\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"Novo Pedido\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Contém texto 'Proxima'\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\">Proxima<\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Contém status 'Fechado'\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\">FECHADO<\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/venda/status/FECHADA",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"venda",
+								"status",
+								"FECHADA"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cadastrar Venda - Valido",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const body = pm.response.text(); // Define the body variable\r",
+									"\r",
+									"pm.test(\"Status do Cadastro deu 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Foi retornado html\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"text/html\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Página do PDV aberta\", function () {\r",
+									"    pm.expect(body.toLowerCase()).to.include(\"<title>pdv</title>\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Pedido Salvo\", function () {\r",
+									"    pm.expect(body).to.include(\"Pedido Salvo\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Campo Cliente encontrado\", function () {\r",
+									"    pm.expect(body).to.include('id=\"cliente\"');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Campo de observação encontrado\", function () {\r",
+									"    pm.expect(body).to.include('id=\"observacao\"');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Tabela de produtos encontrados\", function () {\r",
+									"    pm.expect(body).to.include('id=\"tabelaProdutosVenda\"');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "pessoa",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "observacao",
+									"value": "Testeeeeeeeee",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8080/venda",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"venda"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cadastrar Venda - Invalido",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const body = pm.response.text();\r",
+									"\r",
+									"pm.test(\"Dados aceitos, mesmo com entradas inválidas\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Foi retornado html\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"text/html\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Página do PDV aberta\", function () {\r",
+									"    pm.expect(body.toLowerCase()).to.include(\"<title>pdv</title>\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Pedido Salvo\", function () {\r",
+									"    pm.expect(body).to.include(\"Pedido Salvo\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Campo Cliente encontrado\", function () {\r",
+									"    pm.expect(body).to.include('id=\"cliente\"');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Campo de observação encontrado\", function () {\r",
+									"    pm.expect(body).to.include('id=\"observacao\"');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Tabela de produtos encontrados\", function () {\r",
+									"    pm.expect(body).to.include('id=\"tabelaProdutosVenda\"');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "pessoa",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "observacao",
+									"value": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8080/venda",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"venda"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar Venda - Valida(necessario venda registrada)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const body = pm.response.text(); // Define the body variable\r",
+									"\r",
+									"pm.test(\"Venda encontrada\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Foi retornado html\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"text/html\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Página do PDV aberta\", function () {\r",
+									"    pm.expect(body.toLowerCase()).to.include(\"<title>pdv</title>\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Campo Cliente encontrado\", function () {\r",
+									"    pm.expect(body).to.include('id=\"cliente\"');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Campo de observação encontrado\", function () {\r",
+									"    pm.expect(body).to.include('id=\"observacao\"');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Tabela de produtos encontrados\", function () {\r",
+									"    pm.expect(body).to.include('id=\"tabelaProdutosVenda\"');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "pessoa",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "observacao",
+									"value": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8080/venda/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"venda",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar Venda - Invalida",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const body = pm.response.text(); // Define the body variable\r",
+									"\r",
+									"pm.test(\"Venda não encontrada\", function () {\r",
+									"    pm.response.to.have.status(500);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Não retornado html\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).not.to.include(\"text/html\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Página do PDV não encontrada\", function () {\r",
+									"    pm.expect(body.toLowerCase()).not.to.include(\"<title>pdv</title>\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Pedido não salvo\", function () {\r",
+									"    pm.expect(body).not.to.include(\"Pedido Salvo\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Campo Cliente não encontrado\", function () {\r",
+									"    pm.expect(body).not.to.include('id=\"cliente\"');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Campo de observação não encontrado\", function () {\r",
+									"    pm.expect(body).not.to.include('id=\"observacao\"');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Tabela de produtos não encontrados\", function () {\r",
+									"    pm.expect(body).not.to.include('id=\"tabelaProdutosVenda\"');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/venda/-1000",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"venda",
+								"-1000"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

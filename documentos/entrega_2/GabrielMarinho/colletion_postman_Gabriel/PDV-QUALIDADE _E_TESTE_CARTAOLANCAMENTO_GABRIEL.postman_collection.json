@@ -1,0 +1,300 @@
+{
+	"info": {
+		"_postman_id": "unique-id-for-cartao-lancamento",
+		"name": "PDV-CartaoLancamento",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28265523"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080"
+		}
+	],
+	"item": [
+		{
+			"name": "Login",
+			"item": [
+				{
+					"name": "Fazer Login : SUCESSO",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"TestaAcessibilidade\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.response.to.have.header(\"Content-Type\", \"text/html;charset=UTF-8\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"TestaResponseTime\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+									"});\r",
+									"\r",
+									"const html = pm.response.text();\r",
+									"\r",
+									"pm.test(\"Status 200 OK\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Título da página principal presente\", function () {\r",
+									"    pm.expect(html).to.include(\"<title>PDV</title>\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Usuário logado exibido\", function () {\r",
+									"    pm.expect(html).to.include(\"Usuário: gerente\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Menu lateral presente\", function () {\r",
+									"    pm.expect(html).to.include('class=\"left\"');\r",
+									"    pm.expect(html).to.include('href=\"/produto\"');\r",
+									"    pm.expect(html).to.include('href=\"/venda/status/ABERTA\"');\r",
+									"    pm.expect(html).to.include('href=\"/caixa\"');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Painéis de dashboard presentes\", function () {\r",
+									"    pm.expect(html).to.include('Pedidos em Aberto');\r",
+									"    pm.expect(html).to.include('Total a Receber');\r",
+									"    pm.expect(html).to.include('Total a Pagar');\r",
+									"    pm.expect(html).to.include('NFe Emitidas');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "user",
+									"value": "gerente",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "123",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fazer Login : FALHA",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const html = pm.response.text();\r",
+									"\r",
+									"pm.test(\"Status 200 OK\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Título da página de login presente\", function () {\r",
+									"    pm.expect(html).to.include(\"<title>PDV - Login</title>\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Mensagem de erro de login presente\", function () {\r",
+									"    pm.expect(html).to.include(\"Usuário ou senha inválidos\");\r",
+									"    pm.expect(html).to.include('class=\"alert alert-danger\"');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Formulário de login presente\", function () {\r",
+									"    pm.expect(html).to.include('<form action=\"/login\" method=\"post\">');\r",
+									"    pm.expect(html).to.include('name=\"username\"');\r",
+									"    pm.expect(html).to.include('name=\"password\"');\r",
+									"    pm.expect(html).to.include('id=\"btn-login\"');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "user",
+									"value": "gerente",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "1234",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "CartaoLancamento",
+			"item": [
+				{
+					"name": "Listar CartaoLancamentos",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const html = pm.response.text();",
+									"pm.test(\"Status 200 OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Título da página presente\", function () {",
+									"    pm.expect(html).to.include(\"<title>PDV</title>\");",
+									"});",
+									"pm.test(\"Tabela de lançamentos presente\", function () {",
+									"    pm.expect(html).to.include('<table class=\"table table-striped \"');",
+									"    pm.expect(html).to.include('<thead class=\"cabeca-tabela-principal\">');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/cartaolancamentos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cartaolancamentos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Processar CartaoLancamento",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"pm.test(\"Status 200 OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Processamento realizado com sucesso\", function () {",
+									"    pm.expect(jsonData).to.eql(\"Processamento realizado com sucesso\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/cartaolancamentos/{codigo}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cartaolancamentos",
+								"{codigo}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Antecipar CartaoLancamento",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"pm.test(\"Status 200 OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Antecipação realizada com sucesso\", function () {",
+									"    pm.expect(jsonData).to.eql(\"Antecipação realizada com sucesso\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/cartaolancamentos/antecipar/{codigo}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cartaolancamentos",
+								"antecipar",
+								"{codigo}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
