@@ -2,6 +2,11 @@ package net.originmobi.pdv.service;
 
 import net.originmobi.pdv.enumerado.cartao.CartaoSituacao;
 import net.originmobi.pdv.enumerado.cartao.CartaoTipo;
+import net.originmobi.pdv.exception.CartaoLancamentoException;
+import net.originmobi.pdv.exception.ErroAntecipacaoCartaoException;
+import net.originmobi.pdv.exception.ErroProcessamentoCartaoException;
+import net.originmobi.pdv.exception.RegistroJaAntecipadoException;
+import net.originmobi.pdv.exception.RegistroJaProcessadoException;
 import net.originmobi.pdv.filter.CartaoFilter;
 import net.originmobi.pdv.model.Caixa;
 import net.originmobi.pdv.model.CaixaLancamento;
@@ -254,7 +259,7 @@ class CartaoLancamentoServiceTest {
         // Simula uma exceção ao chamar setSituacao
         doThrow(new RuntimeException("Erro ao setar situação")).when(cartao).setSituacao(any(CartaoSituacao.class));
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> service.processar(cartao));
+        ErroProcessamentoCartaoException exception = assertThrows(ErroProcessamentoCartaoException.class, () -> service.processar(cartao));
         assertEquals("Erro ao tentar realizar o processamento, chame o suporte", exception.getMessage());
         
         // Verifica que o lançamento foi realizado antes do erro
@@ -292,7 +297,7 @@ class CartaoLancamentoServiceTest {
         CartaoLancamento cartao = mock(CartaoLancamento.class);
         when(cartao.getSituacao()).thenReturn(CartaoSituacao.PROCESSADO);
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> service.processar(cartao));
+        RegistroJaProcessadoException exception = assertThrows(RegistroJaProcessadoException.class, () -> service.processar(cartao));
         assertEquals("Registro já processado", exception.getMessage());
     }
 
@@ -301,7 +306,7 @@ class CartaoLancamentoServiceTest {
         CartaoLancamento cartao = mock(CartaoLancamento.class);
         when(cartao.getSituacao()).thenReturn(CartaoSituacao.ANTECIPADO);
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> service.processar(cartao));
+        RegistroJaAntecipadoException exception = assertThrows(RegistroJaAntecipadoException.class, () -> service.processar(cartao));
         assertEquals("Registro já foi antecipado", exception.getMessage());
     }
     @Test
@@ -309,7 +314,7 @@ class CartaoLancamentoServiceTest {
         CartaoLancamento cartao = mock(CartaoLancamento.class);
         when(cartao.getSituacao()).thenReturn(CartaoSituacao.PROCESSADO);
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> service.antecipar(cartao));
+        RegistroJaProcessadoException exception = assertThrows(RegistroJaProcessadoException.class, () -> service.antecipar(cartao));
         assertEquals("Registro já processado", exception.getMessage());
     }
 
@@ -318,7 +323,7 @@ class CartaoLancamentoServiceTest {
         CartaoLancamento cartao = mock(CartaoLancamento.class);
         when(cartao.getSituacao()).thenReturn(CartaoSituacao.ANTECIPADO);
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> service.antecipar(cartao));
+        RegistroJaAntecipadoException exception = assertThrows(RegistroJaAntecipadoException.class, () -> service.antecipar(cartao));
         assertEquals("Registro já foi antecipado", exception.getMessage());
     }
 
@@ -337,7 +342,7 @@ class CartaoLancamentoServiceTest {
 
         doThrow(new RuntimeException("Erro ao realizar lançamento")).when(caixaLancamentoService).lancamento(any());
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> service.processar(cartao));
+        ErroProcessamentoCartaoException exception = assertThrows(ErroProcessamentoCartaoException.class, () -> service.processar(cartao));
         assertEquals("Erro ao tentar realizar o processamento, chame o suporte", exception.getMessage());
     }
 
@@ -357,7 +362,7 @@ class CartaoLancamentoServiceTest {
 
         doThrow(new RuntimeException("Erro ao realizar lançamento")).when(caixaLancamentoService).lancamento(any());
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> service.antecipar(cartao));
+        ErroAntecipacaoCartaoException exception = assertThrows(ErroAntecipacaoCartaoException.class, () -> service.antecipar(cartao));
         assertEquals("Erro ao tentar realizar a antecipação, chame o suporte", exception.getMessage());
     }
 
@@ -377,7 +382,7 @@ class CartaoLancamentoServiceTest {
 
         doThrow(new RuntimeException("Erro ao salvar")).when(repository).save(any(CartaoLancamento.class));
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> service.antecipar(cartao));
+        ErroAntecipacaoCartaoException exception = assertThrows(ErroAntecipacaoCartaoException.class, () -> service.antecipar(cartao));
         assertEquals("Erro ao tentar realizar a antecipação, chame o suporte", exception.getMessage());
     }
     
