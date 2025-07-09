@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import net.originmobi.pdv.dto.produto.ProdutoMergerDTO;
 import net.originmobi.pdv.enumerado.Ativo;
 import net.originmobi.pdv.enumerado.produto.ProdutoBalanca;
 import net.originmobi.pdv.enumerado.produto.ProdutoControleEstoque;
@@ -48,29 +49,28 @@ import net.originmobi.pdv.service.notafiscal.ModBcIcmsService;
 public class ProdutoController {
 
 	private static final String PRODUTO_LIST = "produto/list";
-
 	private static final String PRODUTO_FORM = "produto/form";
 
 	@Autowired
-	private ProdutoService produtos;
+	private ProdutoService produtosService;
 
 	@Autowired
-	private FornecedorService fornecedores;
+	private FornecedorService fornecedoresService;
 
 	@Autowired
-	private GrupoService grupos;
+	private GrupoService gruposService;
 
 	@Autowired
-	private CategoriaService categorias;
+	private CategoriaService categoriasService;
 
 	@Autowired
-	private ImagemProdutoService imagens;
+	private ImagemProdutoService imagensService;
 
 	@Autowired
-	private TributacaoService tributacoes;
+	private TributacaoService tributacoesService;
 
 	@Autowired
-	private ModBcIcmsService modbcs;
+	private ModBcIcmsService modbcsService;
 
 	@GetMapping("/form")
 	public ModelAndView form(Produto produto) {
@@ -87,7 +87,7 @@ public class ProdutoController {
 	@GetMapping
 	public ModelAndView lista(@ModelAttribute("filterProduto") ProdutoFilter filter, Pageable pageable, Model model) {
 		ModelAndView mv = new ModelAndView(PRODUTO_LIST);
-		Page<Produto> listProdutos = produtos.filter(filter, pageable);
+		Page<Produto> listProdutos = produtosService.filter(filter, pageable);
 		mv.addObject("produtos", listProdutos);
 
 		model.addAttribute("qtdpaginas", listProdutos.getTotalPages());
@@ -103,66 +103,55 @@ public class ProdutoController {
 	@RequestMapping(method = RequestMethod.POST)
 	public String cadastrar(@RequestParam Map<String, String> request, RedirectAttributes attributes) {
 
-		String prod = request.get("codigo");
+		Long codigoProd = request.get("codigo") == null || request.get("codigo").isEmpty() ? null : Long.decode(request.get("codigo"));
 		String descricao = request.get("descricao");
-		Long codforne = Long.decode(request.get("fornecedor"));
-		Long categoria = Long.decode(request.get("categoria"));
-		Long grupo = Long.decode(request.get("grupo"));
-		String balanca = request.get("balanca");
-		String vlcusto = request.get("valor_custo");
-		String vlvenda = request.get("valor_venda");
-		String validade = request.get("data_validade");
+		Long codForne = request.get("fornecedor") == null || request.get("fornecedor").isEmpty() ? null : Long.decode(request.get("fornecedor"));
+		Long codCategoria = request.get("categoria") == null || request.get("categoria").isEmpty() ? null : Long.decode(request.get("categoria"));
+		Long codGrupo = request.get("grupo") == null || request.get("grupo").isEmpty() ? null : Long.decode(request.get("grupo"));
+		int balanca = request.get("balanca") != null && request.get("balanca").equals("SIM") ? 1 : 0;
+		Double valorCusto = request.get("valor_custo") == null || request.get("valor_custo").isEmpty() ? 0.0 : Double.valueOf(request.get("valor_custo").replace(",", "."));
+		Double valorVenda = request.get("valor_venda") == null || request.get("valor_venda").isEmpty() ? 0.0 : Double.valueOf(request.get("valor_venda").replace(",", "."));
+		String validadeStr = request.get("data_validade") == null ? "" : request.get("data_validade");
 		String controleEstoque = request.get("controla_estoque");
 		String ativo = request.get("ativo");
-		String unitario = request.get("unidade");
-		String subtribu = request.get("subtributaria");
+		String unidade = request.get("unidade");
+		ProdutoSubstTributaria substituicao = request.get("subtributaria") != null && request.get("subtributaria").equals("SIM") ? ProdutoSubstTributaria.SIM : ProdutoSubstTributaria.NAO;
 		String ncm = request.get("ncm");
 		String cest = request.get("cest");
-		String vlTributacao = request.get("tributacao");
-		String codModbc = request.get("modBcIcms");
+		Long codTributacao = request.get("tributacao") == null || request.get("tributacao").isEmpty() ? null : Long.decode(request.get("tributacao"));
+		Long codModbc = request.get("modBcIcms") == null || request.get("modBcIcms").isEmpty() ? null : Long.decode(request.get("modBcIcms"));
 		String vendavel = request.get("vendavel");
-
-		Long codigoprod = prod.isEmpty() ? 0 : Long.decode(prod);
-		Double valorCusto = vlcusto.isEmpty() ? 0.0 : Double.valueOf(vlcusto.replace(",", "."));
-		Double valorVenda = vlvenda.isEmpty() ? 0.0 : Double.valueOf(vlvenda.replace(",", "."));
-		Long tributacao = vlTributacao.isEmpty() ? null : Long.decode(vlTributacao);
-		Long modbc = codModbc.isEmpty() ? null : Long.decode(codModbc);
+		String enviar = request.get("enviar");
 
 		Date dataValidade = null;
-		if (!validade.isEmpty()) {
+		if (!validadeStr.isEmpty()) {
 			SimpleDateFormat formatoUser = new SimpleDateFormat("dd/MM/yyyy");
 			try {
-				dataValidade = formatoUser.parse(validade);
+				dataValidade = formatoUser.parse(validadeStr);
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
 		}
 
-		int usaBalanca = balanca.equals("SIM") ? 1 : 0;
-		Ativo situacao = ativo.equals("ATIVO") ? Ativo.ATIVO : Ativo.INATIVO;
-		ProdutoSubstTributaria substituicao = subtribu.equals("SIM") ? ProdutoSubstTributaria.SIM
-				: ProdutoSubstTributaria.NAO;
+		ProdutoMergerDTO dto = new ProdutoMergerDTO(codigoProd, codForne, codCategoria, codGrupo, balanca, descricao,
+				valorCusto, valorVenda, dataValidade, controleEstoque, ativo, unidade, substituicao, ncm, cest,
+				codTributacao, codModbc, vendavel, enviar);
 
-		String mensagem = "";
-		System.out.println(controleEstoque);
-		mensagem = produtos.merger(codigoprod, codforne, categoria, grupo, usaBalanca, descricao, valorCusto,
-				valorVenda, dataValidade, controleEstoque, situacao.toString(), unitario, substituicao, ncm, cest, tributacao,
-				modbc, vendavel);
+		String mensagem = produtosService.merger(dto);
 
 		attributes.addFlashAttribute("mensagem", mensagem);
-		
-		if(codigoprod != 0)
-			return "redirect:/produto/" + codigoprod.toString();
-		
-		return "redirect:/produto";
 
+		if (codigoProd != null && codigoProd != 0)
+			return "redirect:/produto/" + codigoProd.toString();
+
+		return "redirect:/produto";
 	}
 
 	@GetMapping("{codigo}")
 	public ModelAndView editar(@PathVariable("codigo") Produto produto) {
 		ModelAndView mv = new ModelAndView(PRODUTO_FORM);
 		mv.addObject("produto", produto);
-		mv.addObject("imagem", imagens.busca(produto.getCodigo()));
+		mv.addObject("imagem", imagensService.busca(produto.getCodigo()));
 		return mv;
 	}
 
@@ -173,17 +162,17 @@ public class ProdutoController {
 
 	@ModelAttribute("fornecedores")
 	public List<Fornecedor> fornecedores() {
-		return fornecedores.lista();
+		return fornecedoresService.lista();
 	}
 
 	@ModelAttribute("grupos")
 	public List<Grupo> grupos() {
-		return grupos.lista();
+		return gruposService.lista();
 	}
 
 	@ModelAttribute("categorias")
 	public List<Categoria> categorias() {
-		return categorias.lista();
+		return categoriasService.lista();
 	}
 
 	@ModelAttribute("balanca")
@@ -198,19 +187,19 @@ public class ProdutoController {
 
 	@ModelAttribute("tributacoes")
 	public List<Tributacao> tributacoes() {
-		return tributacoes.lista();
+		return tributacoesService.lista();
 	}
 
 	@ModelAttribute("modbcs")
 	private List<ModBcIcms> modbc() {
-		return modbcs.lista();
+		return modbcsService.lista();
 	}
 
 	@ModelAttribute("controlaestoque")
 	private List<ProdutoControleEstoque> controlaestoque() {
 		return Arrays.asList(ProdutoControleEstoque.values());
 	}
-	
+
 	@ModelAttribute("produtoVendavel")
 	public List<ProdutoVendavel> produtoVendavel() {
 		return Arrays.asList(ProdutoVendavel.values());

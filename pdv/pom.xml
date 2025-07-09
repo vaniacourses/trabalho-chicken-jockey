@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>net.originmobi</groupId>
@@ -34,11 +34,11 @@
 			<artifactId>spring-boot-starter-jdbc</artifactId>
 		</dependency>
 		<dependency>
-        	<groupId>org.junit.jupiter</groupId>
-        	<artifactId>junit-jupiter</artifactId>
-        	<version>5.9.3</version>
-        	<scope>test</scope>
-    	</dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<version>5.9.3</version>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-core</artifactId>
@@ -107,6 +107,30 @@
 			<scope>provided</scope>
 		</dependency>
 		<!-- … -->
+		<!-- Selenium-->
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-java</artifactId>
+			<version>3.141.59</version>
+		</dependency>
+		<dependency>
+			<groupId>io.github.bonigarcia</groupId>
+			<artifactId>webdrivermanager</artifactId>
+			<version>5.9.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- Lombok-->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
 	</dependencies>
 	<repositories>
 		<repository>
@@ -115,10 +139,12 @@
 		</repository>
 		<repository>
 			<id>jaspersoft-third-party</id>
-			<url>https://jaspersoft.jfrog.io/artifactory/third-party-ce-artifacts</url>
+			<url>
+				https://jaspersoft.jfrog.io/artifactory/third-party-ce-artifacts</url>
 		</repository>
-	</repositories>
 
+
+	</repositories>
 
 	<build>
 		<plugins>
