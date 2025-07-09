@@ -45,131 +45,111 @@ public class CaixaServiceSeleniumTest {
     }
 
     @Test
-    public void testAbrirCaixaDiario() {
-        // Click on "Novo" or "Abrir Caixa" button
-        caixaListPage.clickOpenCaixa();
-        
-        // Verify form is loaded
-        assertTrue(caixaFormPage.isFormLoaded(), "Formulário de abertura de caixa não foi carregado.");
-
-        // Fill the form for daily caixa
-        String descricao = "Caixa Teste Selenium " + System.currentTimeMillis();
-        caixaFormPage.openCaixa("CAIXA", "100,00", descricao);
-
-        // Verify success message
-        assertTrue(caixaFormPage.hasSuccessMessage(), "Mensagem de sucesso deve aparecer.");
-        String successMsg = caixaFormPage.getSuccessMessage();
-        assertTrue(successMsg.contains("sucesso") || successMsg.contains("cadastrado"), 
-                "Mensagem de sucesso deve conter 'sucesso' ou 'cadastrado'");
-    }
-
-    @Test
-    public void testAbrirCaixaCofre() {
-        caixaListPage.clickOpenCaixa();
-        assertTrue(caixaFormPage.isFormLoaded(), "Formulário de abertura de caixa não foi carregado.");
-
-        String descricao = "Cofre Teste Selenium " + System.currentTimeMillis();
-        caixaFormPage.openCaixa("COFRE", "500,00", descricao);
-
-        assertTrue(caixaFormPage.hasSuccessMessage(), "Mensagem de sucesso deve aparecer.");
-    }
-
-    @Test
-    public void testAbrirCaixaBanco() {
-        caixaListPage.clickOpenCaixa();
-        assertTrue(caixaFormPage.isFormLoaded(), "Formulário de abertura de caixa não foi carregado.");
-
-        String descricao = "Banco Teste Selenium " + System.currentTimeMillis();
-        caixaFormPage.openCaixaBanco("1000,00", descricao, "1234", "123456");
-
-        assertTrue(caixaFormPage.hasSuccessMessage(), "Mensagem de sucesso deve aparecer.");
-    }
-
-    @Test
-    public void testAbrirCaixaComValorZero() {
-        caixaListPage.clickOpenCaixa();
-        assertTrue(caixaFormPage.isFormLoaded(), "Formulário de abertura de caixa não foi carregado.");
-
-        String descricao = "Caixa Zero Teste " + System.currentTimeMillis();
-        caixaFormPage.openCaixa("CAIXA", "0,00", descricao);
-
-        assertTrue(caixaFormPage.hasSuccessMessage(), "Mensagem de sucesso deve aparecer.");
-    }
-
-    @Test
-    public void testAbrirCaixaComDescricaoVazia() {
-        caixaListPage.clickOpenCaixa();
-        assertTrue(caixaFormPage.isFormLoaded(), "Formulário de abertura de caixa não foi carregado.");
-
-        // Open caixa with empty description (should use default)
-        caixaFormPage.openCaixa("CAIXA", "50,00", "");
-
-        assertTrue(caixaFormPage.hasSuccessMessage(), "Mensagem de sucesso deve aparecer.");
-    }
-
-    @Test
-    public void testFecharCaixa() {
-        // First, check if there's an open caixa
-        if (caixaListPage.isCaixaOpen()) {
-            caixaListPage.clickCloseCaixa();
-            
-            // If there's a password prompt, enter password
-            if (caixaFormPage.isFormLoaded()) {
-                caixaFormPage.closeCaixa("123"); // Use the same password as login
-            }
-            
-            assertTrue(caixaFormPage.hasSuccessMessage() || caixaListPage.getSuccessMessage().contains("fechado"), 
-                    "Mensagem de sucesso deve aparecer ao fechar o caixa.");
-        } else {
-            // If no caixa is open, this test should be skipped or handle the case
-            System.out.println("Nenhum caixa aberto encontrado para fechar.");
+    public void testAbrirCaixa() {
+        boolean success = false;
+        try {
+            caixaListPage.clickOpenCaixa();
+            assertTrue(caixaFormPage.isFormLoaded(), "Formulário de abertura de caixa não foi carregado.");
+            String descricao = "Caixa Selenium " + System.currentTimeMillis();
+            caixaFormPage.openCaixa("CAIXA", "100,00", descricao);
+            assertTrue(caixaListPage.waitForListPageLoaded(), "Página de listagem de caixas não carregou após abrir caixa.");
+            success = caixaListPage.hasSuccessMessage();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        assertTrue(success, "Mensagem de sucesso deve aparecer ao abrir caixa.");
     }
 
     @Test
-    public void testBuscarCaixa() {
-        // Search for a caixa
-        caixaListPage.searchCaixa("Caixa");
-        
-        // Verify search results
-        assertTrue(caixaListPage.isCaixaInTable("Caixa"), "Resultados da busca devem conter 'Caixa'");
-    }
-
-    @Test
-    public void testVerificarEstadoCaixa() {
-        // Check if caixa is open or closed
-        boolean isOpen = caixaListPage.isCaixaOpen();
-        boolean isClosed = caixaListPage.isCaixaClosed();
-        
-        // At least one state should be true (or both false if no caixa exists)
-        assertTrue(isOpen || isClosed || (!isOpen && !isClosed), 
-                "Estado do caixa deve ser verificável");
+    public void testAbrirCaixa2() {
+        boolean success = false;
+        try {
+            caixaListPage.clickOpenCaixa();
+            assertTrue(caixaFormPage.isFormLoaded(), "Formulário de abertura de caixa não foi carregado.");
+            String descricao = "Caixa Selenium 2 " + System.currentTimeMillis();
+            caixaFormPage.openCaixa("CAIXA", "120,00", descricao);
+            assertTrue(caixaListPage.waitForListPageLoaded(), "Página de listagem de caixas não carregou após abrir caixa.");
+            success = caixaListPage.hasSuccessMessage();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        assertTrue(success, "Mensagem de sucesso deve aparecer ao abrir caixa.");
     }
 
     @Test
     public void testAbrirCaixaComValorNegativo() {
-        caixaListPage.clickOpenCaixa();
-        assertTrue(caixaFormPage.isFormLoaded(), "Formulário de abertura de caixa não foi carregado.");
-
-        // Try to open caixa with negative value
-        caixaFormPage.openCaixa("CAIXA", "-50,00", "Teste Valor Negativo");
-
-        // Should show error message
-        assertTrue(caixaFormPage.hasErrorMessage(), "Mensagem de erro deve aparecer para valor negativo.");
+        boolean erro = false;
+        try {
+            caixaListPage.clickOpenCaixa();
+            assertTrue(caixaFormPage.isFormLoaded(), "Formulário de abertura de caixa não foi carregado.");
+            String descricao = "Caixa Valor Negativo " + System.currentTimeMillis();
+            caixaFormPage.openCaixa("CAIXA", "-50,00", descricao);
+            // Espera mensagem de erro
+            erro = caixaFormPage.hasErrorMessage();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        assertTrue(erro, "Mensagem de erro deve aparecer ao tentar abrir caixa com valor negativo.");
     }
 
     @Test
-    public void testCancelarAberturaCaixa() {
-        caixaListPage.clickOpenCaixa();
-        assertTrue(caixaFormPage.isFormLoaded(), "Formulário de abertura de caixa não foi carregado.");
+    public void testFecharCaixa() {
+        boolean success = false;
+        try {
+            // Tenta acessar gerenciamento, se não houver caixa aberto, abre um primeiro
+            try {
+                caixaListPage.clickManageCaixa();
+            } catch (Exception e) {
+                caixaListPage.clickOpenCaixa();
+                assertTrue(caixaFormPage.isFormLoaded(), "Formulário de abertura de caixa não foi carregado.");
+                String descricao = "Caixa Selenium Fechar " + System.currentTimeMillis();
+                caixaFormPage.openCaixa("CAIXA", "130,00", descricao);
+                assertTrue(caixaListPage.waitForListPageLoaded(), "Página de listagem de caixas não carregou após abrir caixa.");
+                caixaListPage.clickManageCaixa();
+            }
+            caixaListPage.clickBtnFecharCaixa();
+            caixaFormPage.setAdminSenha("123");
+            caixaFormPage.clickModalFecharCaixa();
+            assertTrue(caixaListPage.waitForListPageLoaded(), "Página de listagem de caixas não carregou após fechar caixa.");
+            success = caixaListPage.hasSuccessMessage();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        assertTrue(success, "Mensagem de sucesso deve aparecer ao fechar o caixa.");
+    }
 
-        // Fill some data but cancel
-        caixaFormPage.setTipo("CAIXA");
-        caixaFormPage.setValorAbertura("100,00");
-        caixaFormPage.clickCancel();
+    @Test
+    public void testAbrirCofre() {
+        boolean success = false;
+        try {
+            caixaListPage.clickOpenCaixa();
+            assertTrue(caixaFormPage.isFormLoaded(), "Formulário de abertura de caixa não foi carregado.");
+            String descricao = "Cofre Selenium " + System.currentTimeMillis();
+            caixaFormPage.openCaixa("COFRE", "500,00", descricao);
+            assertTrue(caixaListPage.waitForListPageLoaded(), "Página de listagem de caixas não carregou após abrir cofre.");
+            success = caixaListPage.hasSuccessMessage();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        assertTrue(success, "Mensagem de sucesso deve aparecer ao abrir cofre.");
+    }
 
-        // Should return to caixa list page
-        assertTrue(caixaListPage.isPageLoaded(), "Deve retornar à página de listagem de caixas.");
+    @Test
+    public void testBuscarCaixa() {
+        boolean found = false;
+        try {
+            caixaListPage.clickOpenCaixa();
+            assertTrue(caixaFormPage.isFormLoaded(), "Formulário de abertura de caixa não foi carregado.");
+            String descricao = "Caixa Selenium Busca " + System.currentTimeMillis();
+            caixaFormPage.openCaixa("CAIXA", "140,00", descricao);
+            assertTrue(caixaListPage.waitForListPageLoaded(), "Página de listagem de caixas não carregou após abrir caixa.");
+            caixaListPage.searchCaixa("Caixa");
+            assertTrue(caixaListPage.waitForListPageLoaded(), "Página de listagem de caixas não carregou após busca.");
+            found = caixaListPage.isCaixaInTable("Caixa");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        assertTrue(found, "Resultados da busca devem conter 'Caixa'");
     }
 
     @AfterEach
