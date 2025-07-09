@@ -262,7 +262,7 @@
 					"response": []
 				},
 				{
-					"name": "Cadastrar Produto - Valido",
+					"name": "Cadastrar Venda - Valido",
 					"event": [
 						{
 							"listen": "test",
@@ -338,7 +338,7 @@
 					"response": []
 				},
 				{
-					"name": "Cadastrar Produto - Invalido",
+					"name": "Cadastrar Venda - Invalido",
 					"event": [
 						{
 							"listen": "test",
