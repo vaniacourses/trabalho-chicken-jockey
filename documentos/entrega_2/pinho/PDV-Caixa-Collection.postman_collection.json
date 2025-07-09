@@ -1,0 +1,213 @@
+{
+	"info": {
+		"_postman_id": "7a62dbc1-c0e8-4815-9ee8-008f374b784c",
+		"name": "PDV-Caixa-Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "46531146",
+		"_collection_link": "https://gabrielpinho-3983648.postman.co/workspace/Gabriel-Pinho's-Workspace~65c2dd1c-39d5-4188-8141-6793705a7f79/collection/46531146-7a62dbc1-c0e8-4815-9ee8-008f374b784c?action=share&source=collection_link&creator=46531146"
+	},
+	"item": [
+		{
+			"name": "Caixa",
+			"item": [
+				{
+					"name": "Listar Caixas (SUCESSO)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 200 OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"const html = pm.response.text();",
+									"pm.test(\"test caixa\", function() {",
+									"    pm.expect(html).to.include(\"<td>Caixa Selenium Busca 1751992555356</td>\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "user",
+									"value": "gerente",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "password",
+									"value": "123",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/caixa",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"caixa"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Gerenciar Caixa",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 200 OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"const html = pm.response.text();",
+									"pm.test(\"test Gerencia\", function() {",
+									"    pm.expect(html).to.include(\"<h2>Suprimento de Caixa</h2>\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "user",
+									"value": "gerente",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "123",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/caixa/gerenciar/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"caixa",
+								"gerenciar",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Caixa (FALHA)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 200 OK\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"const html = pm.response.text();\r",
+									"pm.test(\"test caixa\", function() {\r",
+									"    pm.expect(html).to.include(\"<td>Caixa Selenium </td>\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Login",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "user",
+									"value": "gerente",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "123",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:8080/login",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"login"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080"
+		}
+	]
+}
