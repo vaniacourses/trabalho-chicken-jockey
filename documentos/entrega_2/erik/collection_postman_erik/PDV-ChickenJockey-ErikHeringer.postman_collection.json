@@ -184,6 +184,10 @@
 									"\r",
 									"pm.test(\"Contém status 'ABERTO'\", function () {\r",
 									"    pm.expect(pm.response.text()).to.include(\">ABERTO<\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Tempo de resposta menor que 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
 									"});"
 								],
 								"type": "text/javascript",
