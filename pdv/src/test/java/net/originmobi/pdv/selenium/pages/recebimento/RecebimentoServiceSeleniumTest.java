@@ -103,6 +103,11 @@ public class RecebimentoServiceSeleniumTest {
             ExpectedConditions.visibilityOfElementLocated(By.id("titulo")));
         new Select(tituloSelect).selectByIndex(1); // Seleciona "Pagamento em dinheiro"
 
+        WebElement valorInput = wait.until(
+            ExpectedConditions.visibilityOfElementLocated(By.id("vlrecebido")));
+        valorInput.clear();
+        valorInput.sendKeys("1"); // Insere um valor de recebimento (1 centavo)
+
         WebElement receberBtn = driver.findElement(By.cssSelector(".btn-receber-titulo"));
         receberBtn.click();
 
@@ -123,14 +128,10 @@ public class RecebimentoServiceSeleniumTest {
 				checkbox.click();
 			}
 		}
-
 		WebElement receberVariosBtn = wait.until(
 				ExpectedConditions.elementToBeClickable(By.cssSelector(".btn-receber-varios")));
 		receberVariosBtn.click();
 
-		// Espera por mensagem de erro ou ausência de redirecionamento
-		// (Ajuste conforme o comportamento real do sistema)
-		// Exemplo: verifica se continua na mesma página
 		assertTrue(driver.getCurrentUrl().contains("/receber"), "Deve permanecer na tela de receber se nenhuma parcela for selecionada.");
 	}
 }
