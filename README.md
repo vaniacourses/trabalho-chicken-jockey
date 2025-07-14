@@ -2,14 +2,15 @@
 - 🧪 Testes Manuais realizados no TestLink: [TestLink - Vania UFF](http://vania.ic.uff.br/testlink/)
 - 📁 Projeto de Teste: **CJ: Chicken Jockey**
 - 👥 Cada integrante elaborou seu próprio plano de testes para a execução dos testes manuais.
+- ➕ Se quiser verificar individualmente as contribuições de cada membro em cada etapa, basta navegar entre as branchs disponíveis no repositório.
 - 🔐 **Login para acessar o sistema:**
   - Nome: **gerente**
   - Senha: **123**
 - ⚙️ **Requisitos técnicos:**
   - Para que os scripts do banco funcionem, é preciso que se crie um banco de dados chamado **"pdv"**
-  - Necessário ter **Spring** e **MySQL** instalados
+  - Necessário ter **Spring**, **Docker** e **MySQL** instalados
+  - Necessário ter o **Lombok** instalado em sua IDE
   - Versão do Java: **8**
-  - Para conexão com o banco, crie um arquivo **`application.properties`** a partir do **`application-example.properties`** que está na pasta **`resources`**
-  - Docker
+  - Para conexão com o banco, caso queira rodar sem o docker, crie um arquivo **`application.properties`** a partir do **`application-example.properties`** que está na pasta **`resources`**
   - Para executar o docker: execute os comandos **`mvn clean package`**, **`docker-compose up -d`**, e **`docker-compose down`** para derrubar o container
   - para conectar ao banco do docker, a url é **`jdbc:mysql://localhost:3308/pdv`**, banco **`pdv`**, senha **`pdv`** e usuário **`pdv`** 
