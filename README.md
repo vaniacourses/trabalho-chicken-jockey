@@ -1,4 +1,5 @@
 ## 🧰 Artefatos
+  - 📄 Link da documentação final do projeto: [Documentação final- PDV](https://github.com/vaniacourses/trabalho-chicken-jockey/blob/423da1a2837d6e1adc5ebec492d79062ba214937/documentos/DOCUMENTA%C3%87%C3%83O%20FINAL%20-%20PDV.pdf)
   - 📄 Link do Plano de Testes: [Google Docs](https://docs.google.com/document/d/13EUyOmss-Ym6IbgvCHP-StI8qOjlkMFlMTvpD7NzFrg/edit?usp=sharing)
   - 🧪 Testes Manuais realizados no TestLink: [TestLink - Vania UFF](http://vania.ic.uff.br/testlink/)
   - 📁 Pasta contendo todos os documentos dos testes: [Documentos](https://github.com/vaniacourses/trabalho-chicken-jockey/tree/main/documentos)
